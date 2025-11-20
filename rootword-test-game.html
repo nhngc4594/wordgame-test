@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Word Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 90vh;
+        }
+        h1 { color: #333; font-size: 2.5rem; margin-bottom: 10px; }
+        .question-text { font-size: 1.2rem; color: #666; margin-bottom: 30px; }
+        
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background-color: white;
+            border: 2px solid #007bff;
+            color: #007bff;
+            padding: 20px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        button:active { transform: scale(0.95); background-color: #e6f0ff; }
+        
+        /* Styles for the feedback phase */
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+
+        /* Japanese Subtext style */
+        .jp-sub {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: normal;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-area">
+        <h1 id="main-word">Ready?</h1>
+        <p class="question-text" id="instruction">Turn up your volume.</p>
+        <div class="btn-container" id="buttons">
+            <button onclick="startGame()">START GAME</button>
+        </div>
+    </div>
+
+<script>
+    // --- THE DATA ---
+    // We can easily add 1000 words here later.
+    const levels = [
+        {
+            display: "Creative",
+            root: "Create",
+            decoys: ["Creation", "Crate"],
+            pos: "Verb", // The answer for Phase 2
+            posJp: "動詞 (Doushi)" // To show in feedback
+        },
+        {
+            display: "Dangerous",
+            root: "Danger",
+            decoys: ["Done", "Damage"],
+            pos: "Noun",
+            posJp: "名詞 (Meishi)"
+        },
+        {
+            display: "Active",
+            root: "Act",
+            decoys: ["Action", "Actor"],
+            pos: "Verb",
+            posJp: "動詞 (Doushi)"
+        }
+    ];
+
+    let currentLevelIndex = 0;
+    let currentStage = 1; // 1 = Find Root, 2 = Find POS
+
+    const mainWordEl = document.getElementById('main-word');
+    const instructionEl = document.getElementById('instruction');
+    const buttonsEl = document.getElementById('buttons');
+
+    // --- TEXT TO SPEECH ENGINE ---
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.lang = "en-US";
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function startGame() {
+        currentLevelIndex = 0;
+        loadLevel(currentLevelIndex);
+    }
+
+    function loadLevel(index) {
+        if (index >= levels.length) {
+            mainWordEl.innerText = "Great Job!";
+            instructionEl.innerText = "You finished the set.";
+            buttonsEl.innerHTML = '<button onclick="startGame()">Play Again</button>';
+            return;
+        }
+
+        const data = levels[index];
+        currentStage = 1;
+        
+        // VISUALS
+        mainWordEl.innerText = data.display;
+        instructionEl.innerText = "What is the root word?";
+        
+        // AUDIO
+        speak(data.display);
+
+        // BUTTONS (Randomize order)
+        let options = [data.root, ...data.decoys];
+        options.sort(() => Math.random() - 0.5);
+
+        buttonsEl.innerHTML = '';
+        options.forEach(word => {
+            const btn = document.createElement('button');
+            btn.innerText = word;
+            btn.onclick = () => checkRoot(word, data, btn);
+            buttonsEl.appendChild(btn);
+        });
+    }
+
+    function checkRoot(selectedWord, data, btnElement) {
+        if (selectedWord === data.root) {
+            // CORRECT ROOT
+            btnElement.classList.add('correct');
+            setTimeout(() => {
+                loadPhase2(data);
+            }, 500);
+        } else {
+            // WRONG ROOT
+            btnElement.classList.add('wrong');
+            speak("Try again");
+        }
+    }
+
+    function loadPhase2(data) {
+        currentStage = 2;
+        
+        // Update Screen
+        mainWordEl.innerText = data.root;
+        instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
+        
+        // Speak: "What is Create?" (Or just the word again)
+        speak(data.root);
+
+        buttonsEl.innerHTML = '';
+
+        // The options for Phase 2
+        const posOptions = [
+            { en: "Noun", jp: "名詞 (Meishi)" },
+            { en: "Verb", jp: "動詞 (Doushi)" },
+            { en: "Adjective", jp: "形容詞 (Keiyoushi)" }
+        ];
+
+        posOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            // HTML inside button to show JP text small
+            btn.innerHTML = `${opt.en} <span class="jp-sub">${opt.jp}</span>`;
+            btn.onclick = () => checkPOS(opt.en, data, btn);
+            buttonsEl.appendChild(btn);
+        });
+    }
+
+    function checkPOS(selectedPos, data, btnElement) {
+        if (selectedPos === data.pos) {
+            // CORRECT POS - WINNER
+            btnElement.classList.add('correct');
+            
+            // Audio: "Create is a Verb."
+            speak(`${data.root} is a ${data.pos}`);
+
+            setTimeout(() => {
+                currentLevelIndex++;
+                loadLevel(currentLevelIndex);
+            }, 2000); // Wait 2 seconds so they hear the sentence
+        } else {
+            // WRONG POS
+            btnElement.classList.add('wrong');
+            speak("Not quite");
+        }
+    }
+</script>
+
+</body>
+</html>
