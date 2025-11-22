@@ -99,7 +99,6 @@
             cursor: pointer;
         }
 
-        /* Report Card Styles */
         .report-card {
             background: white;
             padding: 30px;
@@ -178,7 +177,7 @@
     ];
 
     let currentLevelIndex = 0;
-    let mistakeCount = 0; // New variable to track errors
+    let mistakeCount = 0;
 
     const mainWordEl = document.getElementById('main-word');
     const instructionEl = document.getElementById('instruction');
@@ -187,17 +186,43 @@
     const levelIndicator = document.getElementById('level-indicator');
     const gameArea = document.getElementById('game-area');
 
-    // --- TEXT TO SPEECH ---
+    // --- NEW VOICE ENGINE ---
+    let preferredVoice = null;
+
+    // This tries to find the "best" English voice available on the device
+    function loadVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        // Priority List: Google US, Samantha (iOS), Microsoft Zira (Windows), or any US English
+        preferredVoice = voices.find(voice => voice.name.includes("Google US English")) || 
+                         voices.find(voice => voice.name === "Samantha") ||
+                         voices.find(voice => voice.name.includes("Zira")) ||
+                         voices.find(voice => voice.lang === "en-US");
+    }
+
+    // Voices load asynchronously, so we hook into the event
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
     function speak(text) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Stop previous sound
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9; 
-        utterance.lang = "en-US";
+        
+        // If we found a good voice, use it
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.pitch = 1;  // Natural pitch
         window.speechSynthesis.speak(utterance);
     }
 
     // --- SAVE SYSTEM ---
     function initGame() {
+        // Load voices one more time just in case
+        loadVoices(); 
+
         const savedIndex = localStorage.getItem('wordGameProgress');
         const savedMistakes = localStorage.getItem('wordGameMistakes');
         
@@ -238,9 +263,9 @@
         levelIndicator.innerText = `Word ${currentLevelIndex + 1} of ${levels.length}`;
     }
 
-    // --- REPORT CARD LOGIC ---
+    // --- REPORT CARD ---
     function showReportCard() {
-        const totalTasks = levels.length * 2; // 2 clicks per word
+        const totalTasks = levels.length * 2;
         const attempts = totalTasks + mistakeCount;
         const accuracy = Math.round((totalTasks / attempts) * 100);
         
@@ -304,8 +329,8 @@
             // WRONG ROOT
             btnElement.classList.add('wrong');
             speak("Try again");
-            mistakeCount++; // Track Error
-            saveProgress(); // Save the error immediately
+            mistakeCount++; 
+            saveProgress(); 
         }
     }
 
@@ -344,8 +369,8 @@
             // WRONG POS
             btnElement.classList.add('wrong');
             speak("Not quite");
-            mistakeCount++; // Track Error
-            saveProgress(); // Save the error immediately
+            mistakeCount++; 
+            saveProgress(); 
         }
     }
 </script>
