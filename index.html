@@ -98,6 +98,29 @@
             font-size: 0.8rem;
             cursor: pointer;
         }
+
+        /* Report Card Styles */
+        .report-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .score-big {
+            font-size: 4rem;
+            color: #28a745;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            color: #555;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -155,15 +178,17 @@
     ];
 
     let currentLevelIndex = 0;
+    let mistakeCount = 0; // New variable to track errors
+
     const mainWordEl = document.getElementById('main-word');
     const instructionEl = document.getElementById('instruction');
     const buttonsEl = document.getElementById('buttons');
     const progressBar = document.getElementById('progress-bar');
     const levelIndicator = document.getElementById('level-indicator');
+    const gameArea = document.getElementById('game-area');
 
     // --- TEXT TO SPEECH ---
     function speak(text) {
-        // Cancel any ongoing speech to prevent overlap
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9; 
@@ -174,24 +199,35 @@
     // --- SAVE SYSTEM ---
     function initGame() {
         const savedIndex = localStorage.getItem('wordGameProgress');
+        const savedMistakes = localStorage.getItem('wordGameMistakes');
+        
         if (savedIndex) {
             currentLevelIndex = parseInt(savedIndex);
-            // Safety check in case list size changed
             if (currentLevelIndex >= levels.length) currentLevelIndex = 0;
         } else {
             currentLevelIndex = 0;
         }
+
+        if (savedMistakes) {
+            mistakeCount = parseInt(savedMistakes);
+        } else {
+            mistakeCount = 0;
+        }
+
         loadLevel(currentLevelIndex);
     }
 
     function saveProgress() {
         localStorage.setItem('wordGameProgress', currentLevelIndex);
+        localStorage.setItem('wordGameMistakes', mistakeCount);
     }
 
     function resetProgress() {
         if(confirm("Start from the beginning?")) {
             localStorage.removeItem('wordGameProgress');
+            localStorage.removeItem('wordGameMistakes');
             currentLevelIndex = 0;
+            mistakeCount = 0;
             location.reload();
         }
     }
@@ -202,14 +238,34 @@
         levelIndicator.innerText = `Word ${currentLevelIndex + 1} of ${levels.length}`;
     }
 
+    // --- REPORT CARD LOGIC ---
+    function showReportCard() {
+        const totalTasks = levels.length * 2; // 2 clicks per word
+        const attempts = totalTasks + mistakeCount;
+        const accuracy = Math.round((totalTasks / attempts) * 100);
+        
+        let rating = "Good Effort";
+        if (accuracy === 100) rating = "Perfect Score!";
+        else if (accuracy >= 90) rating = "Master!";
+        else if (accuracy >= 80) rating = "Great Job";
+
+        gameArea.innerHTML = `
+            <div class="report-card">
+                <h2>Report Card</h2>
+                <div class="score-big">${accuracy}%</div>
+                <div class="stat-row"><span>Total Words:</span> <span>${levels.length}</span></div>
+                <div class="stat-row"><span>Mistakes:</span> <span>${mistakeCount}</span></div>
+                <div class="stat-row"><span>Rating:</span> <span>${rating}</span></div>
+                <p style="margin-top: 20px; color: #777; font-size: 0.9rem;">Take a screenshot and send it to your teacher!</p>
+                <button onclick="resetProgress()" style="margin-top:20px;">Play Again</button>
+            </div>
+        `;
+    }
+
     // --- GAME LOGIC ---
     function loadLevel(index) {
         if (index >= levels.length) {
-            mainWordEl.innerText = "Course Complete!";
-            instructionEl.innerText = "You are a Root Word Master.";
-            buttonsEl.innerHTML = '<button onclick="resetProgress()">Play Again</button>';
-            progressBar.style.width = "100%";
-            levelIndicator.innerText = "Complete";
+            showReportCard();
             return;
         }
 
@@ -240,7 +296,7 @@
         if (selectedWord === data.root) {
             // CORRECT ROOT
             btnElement.classList.add('correct');
-            speak(data.root); // Reinforce the root sound
+            speak(data.root); 
             setTimeout(() => {
                 loadPhase2(data);
             }, 800);
@@ -248,6 +304,8 @@
             // WRONG ROOT
             btnElement.classList.add('wrong');
             speak("Try again");
+            mistakeCount++; // Track Error
+            saveProgress(); // Save the error immediately
         }
     }
 
@@ -255,7 +313,6 @@
         mainWordEl.innerText = data.root;
         instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
         
-        // Buttons for Phase 2
         buttonsEl.innerHTML = '';
 
         const posOptions = [
@@ -280,13 +337,15 @@
 
             setTimeout(() => {
                 currentLevelIndex++;
-                saveProgress(); // Save after every successful word
+                saveProgress(); 
                 loadLevel(currentLevelIndex);
             }, 2500);
         } else {
             // WRONG POS
             btnElement.classList.add('wrong');
             speak("Not quite");
+            mistakeCount++; // Track Error
+            saveProgress(); // Save the error immediately
         }
     }
 </script>
