@@ -212,27 +212,18 @@
     }
 
     // --- SAVE SYSTEM ---
+   // --- SAVE SYSTEM ---
     function initGame() {
-        const savedIndex = localStorage.getItem('wordGameProgress');
-        const savedRootMistakes = localStorage.getItem('wordGameRootMistakes');
-        const savedPosMistakes = localStorage.getItem('wordGamePosMistakes');
+        // TEMPORARY HACK: Force the game to Level 32
+        currentLevelIndex = 32; 
         
-        if (savedIndex) {
-            currentLevelIndex = parseInt(savedIndex);
-            if (currentLevelIndex >= levels.length) currentLevelIndex = 0;
-        } else {
-            currentLevelIndex = 0;
-        }
-
-        if (savedRootMistakes) rootMistakes = parseInt(savedRootMistakes);
-        else rootMistakes = 0;
-
-        if (savedPosMistakes) posMistakes = parseInt(savedPosMistakes);
-        else posMistakes = 0;
+        // We also need to load mistake counts if you want to test the math, 
+        // otherwise they start at 0.
+        rootMistakes = 0; 
+        posMistakes = 0;
 
         loadLevel(currentLevelIndex);
     }
-
     function saveProgress() {
         localStorage.setItem('wordGameProgress', currentLevelIndex);
         localStorage.setItem('wordGameRootMistakes', rootMistakes);
