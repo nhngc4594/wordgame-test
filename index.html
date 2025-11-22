@@ -99,33 +99,47 @@
             cursor: pointer;
         }
 
+        /* Report Card Styles */
         .report-card {
             background: white;
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .score-big {
-            font-size: 4rem;
-            color: #28a745;
+        .score-header {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
             font-weight: bold;
-            margin: 10px 0;
+        }
+        .score-breakdown {
+            text-align: left;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
         }
         .stat-row {
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #555;
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
+        }
+        .total-score {
+            font-size: 2.5rem;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
     <div id="game-area">
-        <div class="level-indicator" id="level-indicator">Word 1 of 33</div>
+        <div class="level-indicator" id="level-indicator">Loading...</div>
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -176,8 +190,10 @@
         { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
     ];
 
-    let currentLevelIndex = 32;
-    let mistakeCount = 0;
+    // Global State Variables
+    let currentLevelIndex = 0;
+    let rootMistakes = 0;
+    let posMistakes = 0;
 
     const mainWordEl = document.getElementById('main-word');
     const instructionEl = document.getElementById('instruction');
@@ -186,38 +202,20 @@
     const levelIndicator = document.getElementById('level-indicator');
     const gameArea = document.getElementById('game-area');
 
-    // --- NEW VOICE ENGINE ---
-    let preferredVoice = null;
-
-    // This tries to find the "best" English voice available on the device
-   
-
-    // Voices load asynchronously, so we hook into the event
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = loadVoices;
-    }
-
-    // --- ORIGINAL SIMPLE VOICE ENGINE ---
+    // --- SIMPLE VOICE ENGINE (REVERTED) ---
     function speak(text) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8; // I lowered this from 0.9 to 0.8 to make it sound calmer
+        utterance.rate = 0.8; // Reduced speed for calmness
         utterance.lang = "en-US";
-        window.speechSynthesis.speak(utterance);
-    }
-
-        utterance.rate = 0.9; // Slightly slower for clarity
-        utterance.pitch = 1;  // Natural pitch
         window.speechSynthesis.speak(utterance);
     }
 
     // --- SAVE SYSTEM ---
     function initGame() {
-        // Load voices one more time just in case
-        loadVoices(); 
-
         const savedIndex = localStorage.getItem('wordGameProgress');
-        const savedMistakes = localStorage.getItem('wordGameMistakes');
+        const savedRootMistakes = localStorage.getItem('wordGameRootMistakes');
+        const savedPosMistakes = localStorage.getItem('wordGamePosMistakes');
         
         if (savedIndex) {
             currentLevelIndex = parseInt(savedIndex);
@@ -226,26 +224,29 @@
             currentLevelIndex = 0;
         }
 
-        if (savedMistakes) {
-            mistakeCount = parseInt(savedMistakes);
-        } else {
-            mistakeCount = 0;
-        }
+        if (savedRootMistakes) rootMistakes = parseInt(savedRootMistakes);
+        else rootMistakes = 0;
+
+        if (savedPosMistakes) posMistakes = parseInt(savedPosMistakes);
+        else posMistakes = 0;
 
         loadLevel(currentLevelIndex);
     }
 
     function saveProgress() {
         localStorage.setItem('wordGameProgress', currentLevelIndex);
-        localStorage.setItem('wordGameMistakes', mistakeCount);
+        localStorage.setItem('wordGameRootMistakes', rootMistakes);
+        localStorage.setItem('wordGamePosMistakes', posMistakes);
     }
 
     function resetProgress() {
         if(confirm("Start from the beginning?")) {
             localStorage.removeItem('wordGameProgress');
-            localStorage.removeItem('wordGameMistakes');
+            localStorage.removeItem('wordGameRootMistakes');
+            localStorage.removeItem('wordGamePosMistakes');
             currentLevelIndex = 0;
-            mistakeCount = 0;
+            rootMistakes = 0;
+            posMistakes = 0;
             location.reload();
         }
     }
@@ -256,25 +257,42 @@
         levelIndicator.innerText = `Word ${currentLevelIndex + 1} of ${levels.length}`;
     }
 
-    // --- REPORT CARD ---
+    // --- NEW REPORT CARD (SPLIT SCORES) ---
     function showReportCard() {
-        const totalTasks = levels.length * 2;
-        const attempts = totalTasks + mistakeCount;
-        const accuracy = Math.round((totalTasks / attempts) * 100);
+        // Calculations
+        const totalWords = levels.length;
+        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
+        const totalCorrectActions = totalWords * 2;
         
+        // Accuracy Math
+        const overallAccuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
+        
+        // Rating Logic
         let rating = "Good Effort";
-        if (accuracy === 100) rating = "Perfect Score!";
-        else if (accuracy >= 90) rating = "Master!";
-        else if (accuracy >= 80) rating = "Great Job";
+        if (overallAccuracy === 100) rating = "Perfect Score!";
+        else if (overallAccuracy >= 90) rating = "Master!";
+        else if (overallAccuracy >= 80) rating = "Great Job";
 
         gameArea.innerHTML = `
             <div class="report-card">
-                <h2>Report Card</h2>
-                <div class="score-big">${accuracy}%</div>
-                <div class="stat-row"><span>Total Words:</span> <span>${levels.length}</span></div>
-                <div class="stat-row"><span>Mistakes:</span> <span>${mistakeCount}</span></div>
-                <div class="stat-row"><span>Rating:</span> <span>${rating}</span></div>
-                <p style="margin-top: 20px; color: #777; font-size: 0.9rem;">Take a screenshot and send it to your teacher!</p>
+                <div class="score-header">Course Complete</div>
+                
+                <div class="score-breakdown">
+                    <div class="stat-row">
+                        <span><strong>Root Errors:</strong></span> 
+                        <span style="color: ${rootMistakes === 0 ? '#28a745' : '#dc3545'}">${rootMistakes}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span><strong>Grammar Errors:</strong></span> 
+                        <span style="color: ${posMistakes === 0 ? '#28a745' : '#dc3545'}">${posMistakes}</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px;">Overall Accuracy</div>
+                <div class="total-score">${overallAccuracy}%</div>
+                <div style="color:#888; margin-bottom:20px;">${rating}</div>
+                
+                <p style="color: #777; font-size: 0.9rem;">Take a screenshot for your teacher!</p>
                 <button onclick="resetProgress()" style="margin-top:20px;">Play Again</button>
             </div>
         `;
@@ -322,7 +340,7 @@
             // WRONG ROOT
             btnElement.classList.add('wrong');
             speak("Try again");
-            mistakeCount++; 
+            rootMistakes++; // Increment Root Mistake Counter
             saveProgress(); 
         }
     }
@@ -362,7 +380,7 @@
             // WRONG POS
             btnElement.classList.add('wrong');
             speak("Not quite");
-            mistakeCount++; 
+            posMistakes++; // Increment POS Mistake Counter
             saveProgress(); 
         }
     }
