@@ -14,10 +14,33 @@
             flex-direction: column;
             justify-content: center;
             height: 90vh;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        h1 { color: #333; font-size: 2.5rem; margin-bottom: 10px; }
-        .question-text { font-size: 1.2rem; color: #666; margin-bottom: 30px; }
+        h1 { color: #333; font-size: 2.5rem; margin-bottom: 10px; margin-top: 0; }
+        .question-text { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
         
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 10px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #007bff;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .level-indicator {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
         .btn-container {
             display: flex;
             flex-direction: column;
@@ -28,106 +51,179 @@
             background-color: white;
             border: 2px solid #007bff;
             color: #007bff;
-            padding: 20px;
-            font-size: 1.2rem;
+            padding: 18px;
+            font-size: 1.3rem;
             border-radius: 15px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
             font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        button:active { transform: scale(0.95); background-color: #e6f0ff; }
+        button:active { transform: scale(0.96); background-color: #e6f0ff; }
         
-        /* Styles for the feedback phase */
-        .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
-        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        /* Feedback Styles */
+        .correct { 
+            background-color: #d4edda !important; 
+            border-color: #28a745 !important; 
+            color: #155724 !important; 
+        }
+        .wrong { 
+            background-color: #f8d7da !important; 
+            border-color: #dc3545 !important; 
+            color: #721c24 !important; 
+            animation: shake 0.5s;
+        }
 
-        /* Japanese Subtext style */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
         .jp-sub {
             display: block;
             font-size: 0.8rem;
             font-weight: normal;
             color: #888;
-            margin-top: 5px;
+            margin-top: 4px;
+        }
+
+        .reset-link {
+            margin-top: 30px;
+            color: #999;
+            text-decoration: underline;
+            font-size: 0.8rem;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="game-area">
+        <div class="level-indicator" id="level-indicator">Word 1 of 33</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
         <h1 id="main-word">Ready?</h1>
         <p class="question-text" id="instruction">Turn up your volume.</p>
         <div class="btn-container" id="buttons">
-            <button onclick="startGame()">START GAME</button>
+            <button onclick="initGame()">START GAME</button>
         </div>
+        
+        <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
     </div>
 
 <script>
     // --- THE DATA ---
-    // We can easily add 1000 words here later.
     const levels = [
-        {
-            display: "Creative",
-            root: "Create",
-            decoys: ["Creation", "Crate"],
-            pos: "Verb", // The answer for Phase 2
-            posJp: "動詞 (Doushi)" // To show in feedback
-        },
-        {
-            display: "Dangerous",
-            root: "Danger",
-            decoys: ["Done", "Damage"],
-            pos: "Noun",
-            posJp: "名詞 (Meishi)"
-        },
-        {
-            display: "Active",
-            root: "Act",
-            decoys: ["Action", "Actor"],
-            pos: "Verb",
-            posJp: "動詞 (Doushi)"
-        }
+        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb" },
+        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb" },
+        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun" },
+        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb" },
+        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb" },
+        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb" },
+        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun" },
+        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb" },
+        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun" },
+        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun" },
+        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb" },
+        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb" },
+        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun" },
+        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun" },
+        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb" },
+        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb" },
+        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb" },
+        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun" },
+        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb" },
+        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun" },
+        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun" },
+        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb" },
+        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun" },
+        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun" },
+        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb" },
+        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb" },
+        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb" },
+        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective" },
+        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective" },
+        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective" },
+        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective" },
+        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
     ];
 
     let currentLevelIndex = 0;
-    let currentStage = 1; // 1 = Find Root, 2 = Find POS
-
     const mainWordEl = document.getElementById('main-word');
     const instructionEl = document.getElementById('instruction');
     const buttonsEl = document.getElementById('buttons');
+    const progressBar = document.getElementById('progress-bar');
+    const levelIndicator = document.getElementById('level-indicator');
 
-    // --- TEXT TO SPEECH ENGINE ---
+    // --- TEXT TO SPEECH ---
     function speak(text) {
+        // Cancel any ongoing speech to prevent overlap
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.rate = 0.9; 
         utterance.lang = "en-US";
         window.speechSynthesis.speak(utterance);
     }
 
-    function startGame() {
-        currentLevelIndex = 0;
+    // --- SAVE SYSTEM ---
+    function initGame() {
+        const savedIndex = localStorage.getItem('wordGameProgress');
+        if (savedIndex) {
+            currentLevelIndex = parseInt(savedIndex);
+            // Safety check in case list size changed
+            if (currentLevelIndex >= levels.length) currentLevelIndex = 0;
+        } else {
+            currentLevelIndex = 0;
+        }
         loadLevel(currentLevelIndex);
     }
 
+    function saveProgress() {
+        localStorage.setItem('wordGameProgress', currentLevelIndex);
+    }
+
+    function resetProgress() {
+        if(confirm("Start from the beginning?")) {
+            localStorage.removeItem('wordGameProgress');
+            currentLevelIndex = 0;
+            location.reload();
+        }
+    }
+
+    function updateProgressUI() {
+        const percentage = ((currentLevelIndex) / levels.length) * 100;
+        progressBar.style.width = percentage + "%";
+        levelIndicator.innerText = `Word ${currentLevelIndex + 1} of ${levels.length}`;
+    }
+
+    // --- GAME LOGIC ---
     function loadLevel(index) {
         if (index >= levels.length) {
-            mainWordEl.innerText = "Great Job!";
-            instructionEl.innerText = "You finished the set.";
-            buttonsEl.innerHTML = '<button onclick="startGame()">Play Again</button>';
+            mainWordEl.innerText = "Course Complete!";
+            instructionEl.innerText = "You are a Root Word Master.";
+            buttonsEl.innerHTML = '<button onclick="resetProgress()">Play Again</button>';
+            progressBar.style.width = "100%";
+            levelIndicator.innerText = "Complete";
             return;
         }
 
+        updateProgressUI();
         const data = levels[index];
-        currentStage = 1;
         
-        // VISUALS
+        // VISUALS PHASE 1
         mainWordEl.innerText = data.display;
         instructionEl.innerText = "What is the root word?";
         
         // AUDIO
         speak(data.display);
 
-        // BUTTONS (Randomize order)
+        // BUTTONS PHASE 1 (Randomize)
         let options = [data.root, ...data.decoys];
         options.sort(() => Math.random() - 0.5);
 
@@ -144,9 +240,10 @@
         if (selectedWord === data.root) {
             // CORRECT ROOT
             btnElement.classList.add('correct');
+            speak(data.root); // Reinforce the root sound
             setTimeout(() => {
                 loadPhase2(data);
-            }, 500);
+            }, 800);
         } else {
             // WRONG ROOT
             btnElement.classList.add('wrong');
@@ -155,18 +252,12 @@
     }
 
     function loadPhase2(data) {
-        currentStage = 2;
-        
-        // Update Screen
         mainWordEl.innerText = data.root;
         instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
         
-        // Speak: "What is Create?" (Or just the word again)
-        speak(data.root);
-
+        // Buttons for Phase 2
         buttonsEl.innerHTML = '';
 
-        // The options for Phase 2
         const posOptions = [
             { en: "Noun", jp: "名詞 (Meishi)" },
             { en: "Verb", jp: "動詞 (Doushi)" },
@@ -175,7 +266,6 @@
 
         posOptions.forEach(opt => {
             const btn = document.createElement('button');
-            // HTML inside button to show JP text small
             btn.innerHTML = `${opt.en} <span class="jp-sub">${opt.jp}</span>`;
             btn.onclick = () => checkPOS(opt.en, data, btn);
             buttonsEl.appendChild(btn);
@@ -184,16 +274,15 @@
 
     function checkPOS(selectedPos, data, btnElement) {
         if (selectedPos === data.pos) {
-            // CORRECT POS - WINNER
+            // CORRECT POS
             btnElement.classList.add('correct');
-            
-            // Audio: "Create is a Verb."
             speak(`${data.root} is a ${data.pos}`);
 
             setTimeout(() => {
                 currentLevelIndex++;
+                saveProgress(); // Save after every successful word
                 loadLevel(currentLevelIndex);
-            }, 2000); // Wait 2 seconds so they hear the sentence
+            }, 2500);
         } else {
             // WRONG POS
             btnElement.classList.add('wrong');
