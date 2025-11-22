@@ -176,7 +176,7 @@
         { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
     ];
 
-    let currentLevelIndex = 0;
+    let currentLevelIndex = 32;
     let mistakeCount = 0;
 
     const mainWordEl = document.getElementById('main-word');
@@ -190,28 +190,21 @@
     let preferredVoice = null;
 
     // This tries to find the "best" English voice available on the device
-    function loadVoices() {
-        const voices = window.speechSynthesis.getVoices();
-        // Priority List: Google US, Samantha (iOS), Microsoft Zira (Windows), or any US English
-        preferredVoice = voices.find(voice => voice.name.includes("Google US English")) || 
-                         voices.find(voice => voice.name === "Samantha") ||
-                         voices.find(voice => voice.name.includes("Zira")) ||
-                         voices.find(voice => voice.lang === "en-US");
-    }
+   
 
     // Voices load asynchronously, so we hook into the event
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
 
+    // --- ORIGINAL SIMPLE VOICE ENGINE ---
     function speak(text) {
-        window.speechSynthesis.cancel(); // Stop previous sound
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        
-        // If we found a good voice, use it
-        if (preferredVoice) {
-            utterance.voice = preferredVoice;
-        }
+        utterance.rate = 0.8; // I lowered this from 0.9 to 0.8 to make it sound calmer
+        utterance.lang = "en-US";
+        window.speechSynthesis.speak(utterance);
+    }
 
         utterance.rate = 0.9; // Slightly slower for clarity
         utterance.pitch = 1;  // Natural pitch
