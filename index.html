@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Root Word Game</title>
     <style>
-        /* NEW STYLES START HERE */
+        /* --- VISUAL STYLING START --- */
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean, modern font stack */
-            background-color: #ecf0f1; /* Soft Light Grey */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #d1e7dd; /* SOFT MINT GREEN BACKGROUND */
             text-align: center;
             padding: 20px;
             display: flex;
@@ -19,60 +19,69 @@
             margin: 0 auto;
         }
         h1 { 
-            color: #2c3e50; /* Dark Navy Accent */
+            color: #2c3e50;
             font-size: 2.8rem; 
             margin-bottom: 5px; 
             margin-top: 0; 
         }
         .question-text { 
             font-size: 1.3rem; 
-            color: #7f8c8d; /* Muted Text */
+            color: #7f8c8d;
             margin-bottom: 30px; 
         }
         
         /* Progress Bar */
         .progress-container {
             width: 100%;
-            background-color: #bdc3c7; /* Lighter Bar */
-            border-radius: 15px; /* More rounded */
+            background-color: #bdc3c7;
+            border-radius: 15px;
             margin-bottom: 20px;
             height: 12px;
         }
         .progress-bar {
             height: 100%;
-            background-color: #3498db; /* Softer Blue */
+            background-color: #3498db; /* Clear Blue */
             border-radius: 15px;
             width: 0%;
-            transition: width 0.4s ease-out; /* Smoother animation */
+            transition: width 0.4s ease-out;
         }
         .level-indicator {
             font-size: 1rem;
-            color: #7f8c8d;
+            color: #2c3e50; /* Darker for better visibility */
             margin-bottom: 10px;
         }
 
         .btn-container {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* Tighter spacing */
+            gap: 12px;
         }
 
         button {
             background-color: white;
-            border: 1px solid #bdc3c7;
+            border: 2px solid #3498db; /* Blue Border */
             color: #2c3e50;
             padding: 16px;
             font-size: 1.3rem;
-            border-radius: 10px; /* Rounded buttons */
+            border-radius: 25px; /* FULLY ROUNDED BUTTONS (Pill Shape) */
             cursor: pointer;
             transition: all 0.2s;
-            font-weight: 500;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Slight shadow for lift */
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Stronger Shadow */
+            
+            /* HALO FIXES */
+            outline: none !important; /* Removes the default focus outline/halo */
+            -webkit-appearance: none; 
+        }
+        
+        button:focus { 
+            outline: none !important; /* Guarantees removal of the halo */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         }
 
         button:hover { 
             background-color: #f5f5f5; 
-            border-color: #3498db; 
+            border-color: #2c3e50; /* Darker border on hover */
         }
         
         button:active { 
@@ -83,13 +92,13 @@
         
         /* Feedback Styles */
         .correct { 
-            background-color: #d4f8e5 !important; /* Very light green */
-            border-color: #2ecc71 !important; /* Emerald Green */
+            background-color: #d4f8e5 !important; 
+            border-color: #2ecc71 !important; /* Bright Success Green */
             color: #2ecc71 !important; 
         }
         .wrong { 
-            background-color: #fbecec !important; /* Very light red */
-            border-color: #e74c3c !important; /* Soft Red */
+            background-color: #fbecec !important; 
+            border-color: #e74c3c !important; /* Clear Error Red */
             color: #e74c3c !important; 
             animation: shake 0.5s;
         }
@@ -106,7 +115,7 @@
             display: block;
             font-size: 0.8rem;
             font-weight: normal;
-            color: #95a5a6; /* Muted grey for Japanese */
+            color: #95a5a6;
             margin-top: 4px;
         }
 
@@ -153,11 +162,11 @@
         }
         .total-score {
             font-size: 3rem;
-            color: #2ecc71; /* Green for success */
+            color: #2ecc71;
             font-weight: bold;
             margin-top: 15px;
         }
-        /* NEW STYLES END HERE */
+        /* --- VISUAL STYLING END --- */
     </style>
 </head>
 <body>
