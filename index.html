@@ -13,10 +13,14 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            height: 90vh;
+            justify-content: flex-start; /* Aligned to the top */
+            min-height: 100vh; /* Ensure it takes full height */
             max-width: 600px;
             margin: 0 auto;
+        }
+        #game-area {
+            width: 100%;
+            margin-top: 20px; /* Added margin to prevent cutoff */
         }
         h1 { 
             color: #2c3e50;
@@ -49,6 +53,7 @@
             font-size: 1rem;
             color: #2c3e50; /* Darker for better visibility */
             margin-bottom: 10px;
+            text-align: left;
         }
 
         .btn-container {
@@ -70,12 +75,12 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Stronger Shadow */
             
             /* HALO FIXES */
-            outline: none !important; /* Removes the default focus outline/halo */
+            outline: none !important; 
             -webkit-appearance: none; 
         }
         
         button:focus { 
-            outline: none !important; /* Guarantees removal of the halo */
+            outline: none !important; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         }
 
@@ -172,19 +177,7 @@
 <body>
 
     <div id="game-area">
-        <div class="level-indicator" id="level-indicator">Loading...</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
         </div>
-
-        <h1 id="main-word">Ready?</h1>
-        <p class="question-text" id="instruction">Turn up your volume.</p>
-        <div class="btn-container" id="buttons">
-            <button onclick="initGame()">START GAME</button>
-        </div>
-        
-        <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
-    </div>
 
 <script>
     // --- GLOBAL CONSTANTS ---
@@ -247,10 +240,20 @@
     let startOfSectionRootMistakes = 0;
     let startOfSectionPosMistakes = 0;
 
-    // NOTE: These variables must be re-mapped in loadLevel()
     let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
     gameArea = document.getElementById('game-area');
 
+    // --- INITIAL HOME PAGE RENDER ---
+    function renderHomePage() {
+        gameArea.innerHTML = `
+            <h1>Root Word Game</h1>
+            <p class="question-text" id="instruction">Turn up your volume to hear the words spoken aloud.</p>
+            <div class="btn-container" id="buttons">
+                <button onclick="initGame()">START GAME</button>
+            </div>
+            <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
+        `;
+    }
 
     // --- SIMPLE VOICE ENGINE ---
     function speak(text) {
@@ -302,7 +305,8 @@
             posMistakes = 0;
             startOfSectionRootMistakes = 0;
             startOfSectionPosMistakes = 0;
-            location.reload();
+            // Instead of location.reload(), call renderHomePage() to fix duplication
+            renderHomePage(); 
         }
     }
 
@@ -325,7 +329,7 @@
         `;
     }
     
-    // --- CHECKPOINT SCREEN (Now shows section-specific scores) ---
+    // --- CHECKPOINT SCREEN ---
     function showCheckpoint() {
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
@@ -361,7 +365,7 @@
                     </div>
                     <hr style="margin: 10px 0; border-top: 1px solid #ccc;">
                     <div class="stat-row" style="font-weight: bold; font-size: 1.2rem;">
-                        <span>Accuracy:</span> 
+                        <span>Section Accuracy:</span> 
                         <span style="color: #2c3e50;">${sectionAccuracy}%</span>
                     </div>
                 </div>
@@ -380,24 +384,13 @@
         startOfSectionPosMistakes = posMistakes;
     }
 
-    // --- FINAL REPORT CARD (Updated Scoring) ---
+    // --- FINAL REPORT CARD (Removed overall accuracy %) ---
     function showReportCard() {
         const totalWords = levels.length;
-        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
-        const totalCorrectActions = totalWords * 2;
-        
-        // Accuracy Math
-        const overallAccuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
         
         // Scoring based on Successes / Total
         const rootSuccesses = totalWords - rootMistakes;
         const posSuccesses = totalWords - posMistakes;
-
-        // Rating Logic
-        let rating = "Good Effort";
-        if (overallAccuracy === 100) rating = "Perfect Score!";
-        else if (overallAccuracy >= 90) rating = "Master!";
-        else if (overallAccuracy >= 80) rating = "Great Job";
 
         gameArea.innerHTML = `
             <div class="report-card">
@@ -417,10 +410,6 @@
                         </span>
                     </div>
                 </div>
-
-                <div style="margin-top:20px;">Overall Accuracy</div>
-                <div class="total-score">${overallAccuracy}%</div>
-                <div style="color:#888; margin-bottom:20px;">${rating}</div>
                 
                 <p style="color: #777; font-size: 0.9rem;">Take a screenshot for your teacher!</p>
                 <button onclick="resetProgress()" style="margin-top:20px;">Play Again</button>
@@ -435,7 +424,7 @@
             return;
         }
 
-        // 1. Re-inject the original game UI 
+        // 1. Re-inject the standard game UI (Fixes duplicate content and missing progress bar)
         gameArea.innerHTML = `
             <div class="level-indicator" id="level-indicator"></div>
             <div class="progress-container">
@@ -447,7 +436,7 @@
             <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
         `;
         
-        // 2. CRITICAL: Re-map the elements
+        // 2. CRITICAL: Re-map the elements after destroying and remaking the inner HTML
         mainWordEl = document.getElementById('main-word');
         instructionEl = document.getElementById('instruction');
         buttonsEl = document.getElementById('buttons');
@@ -546,557 +535,10 @@
             saveProgress(); 
         }
     }
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Root Word Game</title>
-    <style>
-        /* --- VISUAL STYLING START --- */
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #d1e7dd; /* SOFT MINT GREEN BACKGROUND */
-            text-align: center;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 90vh;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        h1 { 
-            color: #2c3e50;
-            font-size: 2.8rem; 
-            margin-bottom: 5px; 
-            margin-top: 0; 
-        }
-        .question-text { 
-            font-size: 1.3rem; 
-            color: #7f8c8d;
-            margin-bottom: 30px; 
-        }
-        
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            background-color: #bdc3c7;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            height: 12px;
-        }
-        .progress-bar {
-            height: 100%;
-            background-color: #3498db; /* Clear Blue */
-            border-radius: 15px;
-            width: 0%;
-            transition: width 0.4s ease-out;
-        }
-        .level-indicator {
-            font-size: 1rem;
-            color: #2c3e50; /* Darker for better visibility */
-            margin-bottom: 10px;
-        }
-
-        .btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        button {
-            background-color: white;
-            border: 2px solid #3498db; /* Blue Border */
-            color: #2c3e50;
-            padding: 16px;
-            font-size: 1.3rem;
-            border-radius: 25px; /* FULLY ROUNDED BUTTONS (Pill Shape) */
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Stronger Shadow */
-            
-            /* HALO FIXES */
-            outline: none !important; /* Removes the default focus outline/halo */
-            -webkit-appearance: none; 
-        }
-        
-        button:focus { 
-            outline: none !important; /* Guarantees removal of the halo */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-
-        button:hover { 
-            background-color: #f5f5f5; 
-            border-color: #2c3e50; /* Darker border on hover */
-        }
-        
-        button:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            background-color: #ecf0f1; 
-        }
-        
-        /* Feedback Styles */
-        .correct { 
-            background-color: #d4f8e5 !important; 
-            border-color: #2ecc71 !important; /* Bright Success Green */
-            color: #2ecc71 !important; 
-        }
-        .wrong { 
-            background-color: #fbecec !important; 
-            border-color: #e74c3c !important; /* Clear Error Red */
-            color: #e74c3c !important; 
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            50% { transform: translateX(4px); }
-            75% { transform: translateX(-4px); }
-            100% { transform: translateX(0); }
-        }
-
-        .jp-sub {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: normal;
-            color: #95a5a6;
-            margin-top: 4px;
-        }
-
-        .reset-link {
-            margin-top: 30px;
-            color: #95a5a6;
-            text-decoration: underline;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .reset-link:hover {
-            color: #2c3e50;
-        }
-
-        /* Report Card Styles */
-        .report-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .score-header {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .score-breakdown {
-            text-align: left;
-            margin-bottom: 25px;
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 10px;
-        }
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-size: 1.1rem;
-            color: #2c3e50;
-            border-bottom: 1px solid #dcdcdc;
-            padding-bottom: 5px;
-        }
-        .total-score {
-            font-size: 3rem;
-            color: #2ecc71;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-        /* --- VISUAL STYLING END --- */
-    </style>
-</head>
-<body>
-
-    <div id="game-area">
-        <div class="level-indicator" id="level-indicator">Loading...</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-
-        <h1 id="main-word">Ready?</h1>
-        <p class="question-text" id="instruction">Turn up your volume.</p>
-        <div class="btn-container" id="buttons">
-            <button onclick="initGame()">START GAME</button>
-        </div>
-        
-        <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
-    </div>
-
-<script>
-    // --- GLOBAL CONSTANTS ---
-    const SECTION_SIZE = 10;
     
-    // --- THE REORGANIZED DATA (39 LEVELS TOTAL) ---
-    const levels = [
-        // *** SECTION 1: CORE VOCABULARY ***
-        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb" },
-        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb" },
-        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun" },
-        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb" },
-        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb" },
-        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb" },
-        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun" },
-        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb" },
-        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun" },
-        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun" },
-        
-        // *** SECTION 2: COMMON AFFIXES (Nouns Focus - FIXED POS) ***
-        // Dishonesty (Root: Honest) -> ADJECTIVE
-        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective" },
-        // Improvement (Root: Improve) -> VERB
-        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb" },
-        // Invisibility (Root: Visible) -> ADJECTIVE
-        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective" },
-        // Decision (Root: Decide) -> VERB
-        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb" },
-        // Happiness (Root: Happy) -> ADJECTIVE
-        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective" },
-        // Disagreement (Root: Agree) -> VERB
-        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb" },
-        // Creator (Root: Create) -> VERB
-        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb" },
-        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb" },
-        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb" },
-        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun" },
+    // Start the page on the home screen
+    renderHomePage();
 
-        // *** SECTION 3: COMPLEX VOCABULARY ***
-        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun" },
-        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb" },
-        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb" },
-        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb" },
-        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun" },
-        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb" },
-        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun" },
-        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun" },
-        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb" },
-        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun" },
-
-        // *** SECTION 4: OPPOSITES/NEGATIVES (9 WORDS) ***
-        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun" },
-        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb" },
-        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb" },
-        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb" },
-        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective" },
-        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective" },
-        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective" },
-        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective" },
-        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
-    ];
-    // Global State Variables
-    let currentLevelIndex = 0;
-    let rootMistakes = 0;
-    let posMistakes = 0;
-
-    // *** NEW VARIABLES FOR SECTION SCORING ***
-    let startOfSectionRootMistakes = 0;
-    let startOfSectionPosMistakes = 0;
-
-    // NOTE: These variables are intentionally NOT initialized here because they must be re-mapped in loadLevel()
-    let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
-    gameArea = document.getElementById('game-area');
-
-
-    // --- SIMPLE VOICE ENGINE ---
-    function speak(text) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8; 
-        utterance.lang = "en-US";
-        window.speechSynthesis.speak(utterance);
-    }
-
-    // --- SAVE SYSTEM ---
-    function initGame() {
-        const savedIndex = localStorage.getItem('wordGameProgress');
-        const savedRootMistakes = localStorage.getItem('wordGameRootMistakes');
-        const savedPosMistakes = localStorage.getItem('wordGamePosMistakes');
-        
-        if (savedIndex) {
-            currentLevelIndex = parseInt(savedIndex);
-            if (currentLevelIndex >= levels.length) currentLevelIndex = 0;
-        } else {
-            currentLevelIndex = 0;
-        }
-
-        if (savedRootMistakes) rootMistakes = parseInt(savedRootMistakes);
-        else rootMistakes = 0;
-
-        if (savedPosMistakes) posMistakes = parseInt(savedPosMistakes);
-        else posMistakes = 0;
-        
-        // Initialize section starting points based on current cumulative mistakes
-        startOfSectionRootMistakes = rootMistakes;
-        startOfSectionPosMistakes = posMistakes;
-
-        loadLevel(currentLevelIndex);
-    }
-
-    function saveProgress() {
-        localStorage.setItem('wordGameProgress', currentLevelIndex);
-        localStorage.setItem('wordGameRootMistakes', rootMistakes);
-        localStorage.setItem('wordGamePosMistakes', posMistakes);
-    }
-
-    function resetProgress() {
-        if(confirm("Start from the beginning?")) {
-            localStorage.removeItem('wordGameProgress');
-            localStorage.removeItem('wordGameRootMistakes');
-            localStorage.removeItem('wordGamePosMistakes');
-            currentLevelIndex = 0;
-            rootMistakes = 0;
-            posMistakes = 0;
-            startOfSectionRootMistakes = 0;
-            startOfSectionPosMistakes = 0;
-            location.reload();
-        }
-    }
-
-    // --- PROGRESS UI UPDATE (Section Aware) ---
-    function updateProgressUI() {
-        // Re-mapping again in case this is called from showCheckpoint()
-        progressBar = document.getElementById('progress-bar');
-        levelIndicator = document.getElementById('level-indicator');
-
-        const totalSections = Math.ceil(levels.length / SECTION_SIZE);
-        const currentSection = Math.floor(currentLevelIndex / SECTION_SIZE) + 1;
-        const wordInCurrentSection = (currentLevelIndex % SECTION_SIZE) + 1;
-        const wordsInSection = (currentSection < totalSections) ? SECTION_SIZE : levels.length % SECTION_SIZE;
-        
-        const percentage = (currentLevelIndex / levels.length) * 100;
-        progressBar.style.width = percentage + "%";
-        
-        levelIndicator.innerHTML = `
-            Section ${currentSection} of ${totalSections} 
-            | Word ${wordInCurrentSection} of ${wordsInSection || SECTION_SIZE}
-        `;
-    }
-    
-   // --- CHECKPOINT SCREEN (Now shows section-specific scores) ---
-    function showCheckpoint() {
-        const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
-        const nextSection = sectionNum + 1;
-        
-        // CALCULATE SECTIONAL SCORES
-        const sectionRootMistakes = rootMistakes - startOfSectionRootMistakes;
-        const sectionPosMistakes = posMistakes - startOfSectionPosMistakes;
-
-        // Each word requires 1 Root attempt and 1 POS attempt (2 total)
-        const wordsInThisSection = (sectionNum * SECTION_SIZE < levels.length) ? SECTION_SIZE : levels.length % SECTION_SIZE;
-        
-        // Total possible correct tasks (2 per word)
-        const totalSectionTasks = wordsInThisSection * 2; 
-
-        // Total correct attempts (Root Successes + POS Successes)
-        const totalCorrect = totalSectionTasks - (sectionRootMistakes + sectionPosMistakes);
-        
-        // FIX: Accuracy must be calculated based on correct tasks / total tasks (or 20 for a full section)
-        const sectionAccuracy = Math.round((totalCorrect / totalSectionTasks) * 100);
-        
-        gameArea.innerHTML = `
-            <div class="report-card">
-                <div class="score-header" style="color:#3498db;">Checkpoint Complete!</div>
-                <h1 style="font-size: 2rem; margin-top:10px;">Section ${sectionNum} Results</h1>
-                
-                <div class="score-breakdown" style="padding: 20px;">
-                    <div class="stat-row">
-                        <span><strong>Root Word Score:</strong></span> 
-                        <span style="color: ${sectionRootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${wordsInThisSection - sectionRootMistakes}/${wordsInThisSection}
-                        </span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Part of Speech Score:</strong></span> 
-                        <span style="color: ${sectionPosMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${wordsInThisSection - sectionPosMistakes}/${wordsInThisSection}
-                        </span>
-                    </div>
-                    <hr style="margin: 10px 0; border-top: 1px solid #ccc;">
-                    <div class="stat-row" style="font-weight: bold; font-size: 1.2rem;">
-                        <span>Accuracy:</span> 
-                        <span style="color: #2c3e50;">${sectionAccuracy}%</span>
-                    </div>
-                </div>
-
-                <p style="color: #777; margin-top:20px;">
-                    Ready for Section ${nextSection}?
-                </p>
-                <button onclick="loadLevel(${currentLevelIndex})" style="margin-top:20px;">
-                    Continue to Section ${nextSection}
-                </button>
-            </div>
-        `;
-
-        // UPDATE START OF SECTION MISTAKE TRACKERS FOR THE NEXT SECTION
-        startOfSectionRootMistakes = rootMistakes;
-        startOfSectionPosMistakes = posMistakes;
-    }
-    // --- FINAL REPORT CARD ---
-    function showReportCard() {
-        // Calculations
-        const totalWords = levels.length;
-        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
-        const totalCorrectActions = totalWords * 2;
-        
-        // Accuracy Math
-        const overallAccuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
-        
-        // Rating Logic
-        let rating = "Good Effort";
-        if (overallAccuracy === 100) rating = "Perfect Score!";
-        else if (overallAccuracy >= 90) rating = "Master!";
-        else if (overallAccuracy >= 80) rating = "Great Job";
-
-        gameArea.innerHTML = `
-            <div class="report-card">
-                <div class="score-header">Course Complete</div>
-                
-                <div class="score-breakdown">
-                    <div class="stat-row">
-                        <span><strong>Root Errors (Vocabulary):</strong></span> 
-                        <span style="color: ${rootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">${rootMistakes}</span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Grammar Errors (POS):</strong></span> 
-                        <span style="color: ${posMistakes === 0 ? '#2ecc71' : '#e74c3c'}">${posMistakes}</span>
-                    </div>
-                </div>
-
-                <div style="margin-top:20px;">Overall Accuracy</div>
-                <div class="total-score">${overallAccuracy}%</div>
-                <div style="color:#888; margin-bottom:20px;">${rating}</div>
-                
-                <p style="color: #777; font-size: 0.9rem;">Take a screenshot for your teacher!</p>
-                <button onclick="resetProgress()" style="margin-top:20px;">Play Again</button>
-            </div>
-        `;
-    }
-
-    // --- GAME LOGIC ---
-    function loadLevel(index) {
-        if (index >= levels.length) {
-            showReportCard();
-            return;
-        }
-
-        // 1. Re-inject the original game UI before loading the level (Fix for Checkpoint)
-        gameArea.innerHTML = `
-            <div class="level-indicator" id="level-indicator"></div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <h1 id="main-word"></h1>
-            <p class="question-text" id="instruction"></p>
-            <div class="btn-container" id="buttons"></div>
-            <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
-        `;
-        
-        // 2. CRITICAL FIX: Re-map the elements after destroying and remaking the inner HTML
-        mainWordEl = document.getElementById('main-word');
-        instructionEl = document.getElementById('instruction');
-        buttonsEl = document.getElementById('buttons');
-        progressBar = document.getElementById('progress-bar');
-        levelIndicator = document.getElementById('level-indicator');
-
-        updateProgressUI();
-        const data = levels[index];
-        
-        // VISUALS PHASE 1
-        mainWordEl.innerText = data.display;
-        instructionEl.innerText = "What is the root word?";
-        
-        // AUDIO
-        speak(data.display);
-
-        // BUTTONS PHASE 1 (Randomize)
-        let options = [data.root, ...data.decoys];
-        options.sort(() => Math.random() - 0.5);
-
-        buttonsEl.innerHTML = '';
-        options.forEach(word => {
-            const btn = document.createElement('button');
-            btn.innerText = word;
-            btn.onclick = () => checkRoot(word, data, btn);
-            buttonsEl.appendChild(btn);
-        });
-    }
-
-    function checkRoot(selectedWord, data, btnElement) {
-        if (selectedWord === data.root) {
-            // CORRECT ROOT
-            btnElement.classList.add('correct');
-            speak(data.root); 
-            setTimeout(() => {
-                loadPhase2(data); 
-            }, 800);
-        } else {
-            // WRONG ROOT
-            btnElement.classList.add('wrong');
-            speak("Try again");
-            rootMistakes++; 
-            saveProgress(); 
-        }
-    }
-
-    function loadPhase2(data) {
-        mainWordEl.innerText = data.root;
-        instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
-        
-        buttonsEl.innerHTML = '';
-
-        const posOptions = [
-            { en: "Noun", jp: "名詞 (Meishi)" },
-            { en: "Verb", jp: "動詞 (Doushi)" },
-            { en: "Adjective", jp: "形容詞 (Keiyoushi)" }
-        ];
-
-        posOptions.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.innerHTML = `${opt.en} <span class="jp-sub">${opt.jp}</span>`;
-            btn.onclick = () => checkPOS(opt.en, data, btn);
-            buttonsEl.appendChild(btn);
-        });
-    }
-
-    function checkPOS(selectedPos, data, btnElement) {
-        if (selectedPos === data.pos) {
-            // CORRECT POS
-            btnElement.classList.add('correct');
-            speak(`${data.root} is a ${data.pos}`);
-
-            setTimeout(() => {
-                currentLevelIndex++;
-                saveProgress(); 
-                
-                // CHECKPOINT LOGIC: Pause game at the end of a section
-                if (currentLevelIndex < levels.length && (currentLevelIndex % SECTION_SIZE === 0)) {
-                    showCheckpoint();
-                } else {
-                    loadLevel(currentLevelIndex);
-                }
-            }, 2500);
-        } else {
-            // WRONG POS
-            btnElement.classList.add('wrong');
-            speak("Not quite");
-            posMistakes++; 
-            saveProgress(); 
-        }
-    }
 </script>
 
 </body>
