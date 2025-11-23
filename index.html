@@ -204,14 +204,21 @@
         { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun" },
         { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun" },
         
-        // *** SECTION 2: COMMON AFFIXES (Nouns Focus) ***
-        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Noun" },
-        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Noun" },
-        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Noun" },
-        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Noun" },
-        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Noun" },
-        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Noun" },
-        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Noun" },
+        // *** SECTION 2: COMMON AFFIXES (Nouns Focus - FIXED POS) ***
+        // Dishonesty (Root: Honest) -> ADJECTIVE
+        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective" },
+        // Improvement (Root: Improve) -> VERB
+        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb" },
+        // Invisibility (Root: Visible) -> ADJECTIVE
+        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective" },
+        // Decision (Root: Decide) -> VERB
+        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb" },
+        // Happiness (Root: Happy) -> ADJECTIVE
+        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective" },
+        // Disagreement (Root: Agree) -> VERB
+        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb" },
+        // Creator (Root: Create) -> VERB
+        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb" },
         { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb" },
         { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb" },
         { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun" },
@@ -239,7 +246,6 @@
         { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective" },
         { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
     ];
-
     // Global State Variables
     let currentLevelIndex = 0;
     let rootMistakes = 0;
@@ -329,7 +335,7 @@
         `;
     }
     
-    // --- CHECKPOINT SCREEN (Now shows section-specific scores) ---
+   // --- CHECKPOINT SCREEN (Now shows section-specific scores) ---
     function showCheckpoint() {
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
@@ -339,11 +345,16 @@
         const sectionPosMistakes = posMistakes - startOfSectionPosMistakes;
 
         // Each word requires 1 Root attempt and 1 POS attempt (2 total)
-        const totalSectionAttempts = SECTION_SIZE * 2; 
-        const totalSectionMistakes = sectionRootMistakes + sectionPosMistakes;
-        const totalCorrect = totalSectionAttempts - totalSectionMistakes;
+        const wordsInThisSection = (sectionNum * SECTION_SIZE < levels.length) ? SECTION_SIZE : levels.length % SECTION_SIZE;
+        
+        // Total possible correct tasks (2 per word)
+        const totalSectionTasks = wordsInThisSection * 2; 
 
-        const sectionAccuracy = Math.round((totalCorrect / totalSectionAttempts) * 100);
+        // Total correct attempts (Root Successes + POS Successes)
+        const totalCorrect = totalSectionTasks - (sectionRootMistakes + sectionPosMistakes);
+        
+        // FIX: Accuracy must be calculated based on correct tasks / total tasks (or 20 for a full section)
+        const sectionAccuracy = Math.round((totalCorrect / totalSectionTasks) * 100);
         
         gameArea.innerHTML = `
             <div class="report-card">
@@ -354,13 +365,13 @@
                     <div class="stat-row">
                         <span><strong>Root Word Score:</strong></span> 
                         <span style="color: ${sectionRootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${SECTION_SIZE - sectionRootMistakes}/${SECTION_SIZE}
+                            ${wordsInThisSection - sectionRootMistakes}/${wordsInThisSection}
                         </span>
                     </div>
                     <div class="stat-row">
                         <span><strong>Part of Speech Score:</strong></span> 
                         <span style="color: ${sectionPosMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${SECTION_SIZE - sectionPosMistakes}/${SECTION_SIZE}
+                            ${wordsInThisSection - sectionPosMistakes}/${wordsInThisSection}
                         </span>
                     </div>
                     <hr style="margin: 10px 0; border-top: 1px solid #ccc;">
@@ -383,7 +394,6 @@
         startOfSectionRootMistakes = rootMistakes;
         startOfSectionPosMistakes = posMistakes;
     }
-
     // --- FINAL REPORT CARD ---
     function showReportCard() {
         // Calculations
