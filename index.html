@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Root Word Game</title>
     <style>
+        /* NEW STYLES START HERE */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean, modern font stack */
+            background-color: #ecf0f1; /* Soft Light Grey */
             text-align: center;
             padding: 20px;
             display: flex;
@@ -17,69 +18,87 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        h1 { color: #333; font-size: 2.5rem; margin-bottom: 10px; margin-top: 0; }
-        .question-text { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
+        h1 { 
+            color: #2c3e50; /* Dark Navy Accent */
+            font-size: 2.8rem; 
+            margin-bottom: 5px; 
+            margin-top: 0; 
+        }
+        .question-text { 
+            font-size: 1.3rem; 
+            color: #7f8c8d; /* Muted Text */
+            margin-bottom: 30px; 
+        }
         
         /* Progress Bar */
         .progress-container {
             width: 100%;
-            background-color: #ddd;
-            border-radius: 10px;
+            background-color: #bdc3c7; /* Lighter Bar */
+            border-radius: 15px; /* More rounded */
             margin-bottom: 20px;
-            height: 10px;
+            height: 12px;
         }
         .progress-bar {
             height: 100%;
-            background-color: #007bff;
-            border-radius: 10px;
+            background-color: #3498db; /* Softer Blue */
+            border-radius: 15px;
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.4s ease-out; /* Smoother animation */
         }
         .level-indicator {
-            font-size: 0.9rem;
-            color: #888;
+            font-size: 1rem;
+            color: #7f8c8d;
             margin-bottom: 10px;
         }
 
         .btn-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px; /* Tighter spacing */
         }
 
         button {
             background-color: white;
-            border: 2px solid #007bff;
-            color: #007bff;
-            padding: 18px;
+            border: 1px solid #bdc3c7;
+            color: #2c3e50;
+            padding: 16px;
             font-size: 1.3rem;
-            border-radius: 15px;
+            border-radius: 10px; /* Rounded buttons */
             cursor: pointer;
-            transition: all 0.1s;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Slight shadow for lift */
         }
 
-        button:active { transform: scale(0.96); background-color: #e6f0ff; }
+        button:hover { 
+            background-color: #f5f5f5; 
+            border-color: #3498db; 
+        }
+        
+        button:active { 
+            transform: translateY(1px); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            background-color: #ecf0f1; 
+        }
         
         /* Feedback Styles */
         .correct { 
-            background-color: #d4edda !important; 
-            border-color: #28a745 !important; 
-            color: #155724 !important; 
+            background-color: #d4f8e5 !important; /* Very light green */
+            border-color: #2ecc71 !important; /* Emerald Green */
+            color: #2ecc71 !important; 
         }
         .wrong { 
-            background-color: #f8d7da !important; 
-            border-color: #dc3545 !important; 
-            color: #721c24 !important; 
+            background-color: #fbecec !important; /* Very light red */
+            border-color: #e74c3c !important; /* Soft Red */
+            color: #e74c3c !important; 
             animation: shake 0.5s;
         }
 
         @keyframes shake {
             0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
+            25% { transform: translateX(-4px); }
+            50% { transform: translateX(4px); }
+            75% { transform: translateX(-4px); }
             100% { transform: translateX(0); }
         }
 
@@ -87,35 +106,39 @@
             display: block;
             font-size: 0.8rem;
             font-weight: normal;
-            color: #888;
+            color: #95a5a6; /* Muted grey for Japanese */
             margin-top: 4px;
         }
 
         .reset-link {
             margin-top: 30px;
-            color: #999;
+            color: #95a5a6;
             text-decoration: underline;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        .reset-link:hover {
+            color: #2c3e50;
         }
 
         /* Report Card Styles */
         .report-card {
             background: white;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .score-header {
-            font-size: 1.5rem;
-            color: #333;
+            font-size: 1.8rem;
+            color: #2c3e50;
             margin-bottom: 20px;
             font-weight: bold;
         }
         .score-breakdown {
             text-align: left;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
+            margin-bottom: 25px;
+            background-color: #ecf0f1;
             padding: 15px;
             border-radius: 10px;
         }
@@ -123,17 +146,18 @@
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
-            font-size: 1rem;
-            color: #555;
-            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            border-bottom: 1px solid #dcdcdc;
             padding-bottom: 5px;
         }
         .total-score {
-            font-size: 2.5rem;
-            color: #28a745;
+            font-size: 3rem;
+            color: #2ecc71; /* Green for success */
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
         }
+        /* NEW STYLES END HERE */
     </style>
 </head>
 <body>
@@ -202,11 +226,11 @@
     const levelIndicator = document.getElementById('level-indicator');
     const gameArea = document.getElementById('game-area');
 
-    // --- SIMPLE VOICE ENGINE (REVERTED) ---
+    // --- SIMPLE VOICE ENGINE ---
     function speak(text) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8; // Reduced speed for calmness
+        utterance.rate = 0.8; 
         utterance.lang = "en-US";
         window.speechSynthesis.speak(utterance);
     }
@@ -257,7 +281,7 @@
         levelIndicator.innerText = `Word ${currentLevelIndex + 1} of ${levels.length}`;
     }
 
-    // --- NEW REPORT CARD (SPLIT SCORES) ---
+    // --- REPORT CARD (SPLIT SCORES) ---
     function showReportCard() {
         // Calculations
         const totalWords = levels.length;
@@ -279,12 +303,12 @@
                 
                 <div class="score-breakdown">
                     <div class="stat-row">
-                        <span><strong>Root Errors:</strong></span> 
-                        <span style="color: ${rootMistakes === 0 ? '#28a745' : '#dc3545'}">${rootMistakes}</span>
+                        <span><strong>Root Errors (Vocabulary):</strong></span> 
+                        <span style="color: ${rootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">${rootMistakes}</span>
                     </div>
                     <div class="stat-row">
-                        <span><strong>Grammar Errors:</strong></span> 
-                        <span style="color: ${posMistakes === 0 ? '#28a745' : '#dc3545'}">${posMistakes}</span>
+                        <span><strong>Grammar Errors (POS):</strong></span> 
+                        <span style="color: ${posMistakes === 0 ? '#2ecc71' : '#e74c3c'}">${posMistakes}</span>
                     </div>
                 </div>
 
@@ -340,7 +364,7 @@
             // WRONG ROOT
             btnElement.classList.add('wrong');
             speak("Try again");
-            rootMistakes++; // Increment Root Mistake Counter
+            rootMistakes++; 
             saveProgress(); 
         }
     }
@@ -380,7 +404,7 @@
             // WRONG POS
             btnElement.classList.add('wrong');
             speak("Not quite");
-            posMistakes++; // Increment POS Mistake Counter
+            posMistakes++; 
             saveProgress(); 
         }
     }
