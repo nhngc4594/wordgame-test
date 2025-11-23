@@ -245,12 +245,10 @@
     let rootMistakes = 0;
     let posMistakes = 0;
 
-    const mainWordEl = document.getElementById('main-word');
-    const instructionEl = document.getElementById('instruction');
-    const buttonsEl = document.getElementById('buttons');
-    const progressBar = document.getElementById('progress-bar');
-    const levelIndicator = document.getElementById('level-indicator');
-    const gameArea = document.getElementById('game-area');
+    // NOTE: These variables are intentionally NOT initialized here because they must be re-mapped in loadLevel()
+    let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
+    gameArea = document.getElementById('game-area');
+
 
     // --- SIMPLE VOICE ENGINE ---
     function speak(text) {
@@ -303,6 +301,10 @@
 
     // --- PROGRESS UI UPDATE (Section Aware) ---
     function updateProgressUI() {
+        // Re-mapping again in case this is called from showCheckpoint()
+        progressBar = document.getElementById('progress-bar');
+        levelIndicator = document.getElementById('level-indicator');
+
         const totalSections = Math.ceil(levels.length / SECTION_SIZE);
         const currentSection = Math.floor(currentLevelIndex / SECTION_SIZE) + 1;
         const wordInCurrentSection = (currentLevelIndex % SECTION_SIZE) + 1;
@@ -396,7 +398,7 @@
             return;
         }
 
-        // Re-inject the original game UI before loading the level
+        // 1. Re-inject the original game UI before loading the level (Fix for Checkpoint)
         gameArea.innerHTML = `
             <div class="level-indicator" id="level-indicator"></div>
             <div class="progress-container">
@@ -408,12 +410,12 @@
             <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
         `;
         
-        // Re-map the elements (required because we destroyed and remade the inner HTML)
-        const mainWordEl = document.getElementById('main-word');
-        const instructionEl = document.getElementById('instruction');
-        const buttonsEl = document.getElementById('buttons');
-        const progressBar = document.getElementById('progress-bar');
-        const levelIndicator = document.getElementById('level-indicator');
+        // 2. CRITICAL FIX: Re-map the elements after destroying and remaking the inner HTML
+        mainWordEl = document.getElementById('main-word');
+        instructionEl = document.getElementById('instruction');
+        buttonsEl = document.getElementById('buttons');
+        progressBar = document.getElementById('progress-bar');
+        levelIndicator = document.getElementById('level-indicator');
 
         updateProgressUI();
         const data = levels[index];
@@ -444,7 +446,8 @@
             btnElement.classList.add('correct');
             speak(data.root); 
             setTimeout(() => {
-                loadPhase2(data);
+                // The fix ensures loadPhase2 can access buttonsEl, which it now can.
+                loadPhase2(data); 
             }, 800);
         } else {
             // WRONG ROOT
@@ -456,6 +459,7 @@
     }
 
     function loadPhase2(data) {
+        // These elements are correctly re-mapped in loadLevel and now available here.
         mainWordEl.innerText = data.root;
         instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
         
