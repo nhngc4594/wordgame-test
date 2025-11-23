@@ -245,6 +245,10 @@
     let rootMistakes = 0;
     let posMistakes = 0;
 
+    // *** NEW VARIABLES FOR SECTION SCORING ***
+    let startOfSectionRootMistakes = 0;
+    let startOfSectionPosMistakes = 0;
+
     // NOTE: These variables are intentionally NOT initialized here because they must be re-mapped in loadLevel()
     let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
     gameArea = document.getElementById('game-area');
@@ -277,6 +281,10 @@
 
         if (savedPosMistakes) posMistakes = parseInt(savedPosMistakes);
         else posMistakes = 0;
+        
+        // Initialize section starting points based on current cumulative mistakes
+        startOfSectionRootMistakes = rootMistakes;
+        startOfSectionPosMistakes = posMistakes;
 
         loadLevel(currentLevelIndex);
     }
@@ -295,6 +303,8 @@
             currentLevelIndex = 0;
             rootMistakes = 0;
             posMistakes = 0;
+            startOfSectionRootMistakes = 0;
+            startOfSectionPosMistakes = 0;
             location.reload();
         }
     }
@@ -319,35 +329,59 @@
         `;
     }
     
-    // --- CHECKPOINT SCREEN ---
+    // --- CHECKPOINT SCREEN (Now shows section-specific scores) ---
     function showCheckpoint() {
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
         
+        // CALCULATE SECTIONAL SCORES
+        const sectionRootMistakes = rootMistakes - startOfSectionRootMistakes;
+        const sectionPosMistakes = posMistakes - startOfSectionPosMistakes;
+
+        // Each word requires 1 Root attempt and 1 POS attempt (2 total)
+        const totalSectionAttempts = SECTION_SIZE * 2; 
+        const totalSectionMistakes = sectionRootMistakes + sectionPosMistakes;
+        const totalCorrect = totalSectionAttempts - totalSectionMistakes;
+
+        const sectionAccuracy = Math.round((totalCorrect / totalSectionAttempts) * 100);
+        
         gameArea.innerHTML = `
             <div class="report-card">
                 <div class="score-header" style="color:#3498db;">Checkpoint Complete!</div>
-                <h1 style="font-size: 2rem; margin-top:10px;">Section ${sectionNum} Finished</h1>
+                <h1 style="font-size: 2rem; margin-top:10px;">Section ${sectionNum} Results</h1>
                 
-                <div class="score-breakdown">
+                <div class="score-breakdown" style="padding: 20px;">
                     <div class="stat-row">
-                        <span>Words Completed:</span> 
-                        <span>${currentLevelIndex} / ${levels.length}</span>
+                        <span><strong>Root Word Score:</strong></span> 
+                        <span style="color: ${sectionRootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
+                            ${SECTION_SIZE - sectionRootMistakes}/${SECTION_SIZE}
+                        </span>
                     </div>
                     <div class="stat-row">
-                        <span>Total Mistakes:</span> 
-                        <span>${rootMistakes + posMistakes}</span>
+                        <span><strong>Part of Speech Score:</strong></span> 
+                        <span style="color: ${sectionPosMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
+                            ${SECTION_SIZE - sectionPosMistakes}/${SECTION_SIZE}
+                        </span>
+                    </div>
+                    <hr style="margin: 10px 0; border-top: 1px solid #ccc;">
+                    <div class="stat-row" style="font-weight: bold; font-size: 1.2rem;">
+                        <span>Accuracy:</span> 
+                        <span style="color: #2c3e50;">${sectionAccuracy}%</span>
                     </div>
                 </div>
 
                 <p style="color: #777; margin-top:20px;">
-                    Ready to tackle Section ${nextSection}?
+                    Ready for Section ${nextSection}?
                 </p>
                 <button onclick="loadLevel(${currentLevelIndex})" style="margin-top:20px;">
                     Continue to Section ${nextSection}
                 </button>
             </div>
         `;
+
+        // UPDATE START OF SECTION MISTAKE TRACKERS FOR THE NEXT SECTION
+        startOfSectionRootMistakes = rootMistakes;
+        startOfSectionPosMistakes = posMistakes;
     }
 
     // --- FINAL REPORT CARD ---
@@ -446,7 +480,6 @@
             btnElement.classList.add('correct');
             speak(data.root); 
             setTimeout(() => {
-                // The fix ensures loadPhase2 can access buttonsEl, which it now can.
                 loadPhase2(data); 
             }, 800);
         } else {
@@ -459,7 +492,6 @@
     }
 
     function loadPhase2(data) {
-        // These elements are correctly re-mapped in loadLevel and now available here.
         mainWordEl.innerText = data.root;
         instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
         
