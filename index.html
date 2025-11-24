@@ -247,8 +247,8 @@
     function renderHomePage() {
         gameArea.innerHTML = `
             <h1>Root Word Game</h1>
-            <p class="question-text" id="instruction">Turn up your volume to hear the words spoken aloud.</p>
-            <div class="btn-container" id="buttons">
+            <p class="question-text">Turn up your volume to hear the words spoken aloud.</p>
+            <div class="btn-container">
                 <button onclick="initGame()">START GAME</button>
             </div>
             <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
@@ -305,7 +305,6 @@
             posMistakes = 0;
             startOfSectionRootMistakes = 0;
             startOfSectionPosMistakes = 0;
-            // Instead of location.reload(), call renderHomePage() to fix duplication
             renderHomePage(); 
         }
     }
@@ -329,7 +328,7 @@
         `;
     }
     
-    // --- CHECKPOINT SCREEN ---
+    // --- CHECKPOINT SCREEN (Accuracy % RESTORED) ---
     function showCheckpoint() {
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
@@ -384,13 +383,23 @@
         startOfSectionPosMistakes = posMistakes;
     }
 
-    // --- FINAL REPORT CARD (Removed overall accuracy %) ---
+    // --- FINAL REPORT CARD (Accuracy % RESTORED) ---
     function showReportCard() {
         const totalWords = levels.length;
+        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
+        const totalCorrectActions = totalWords * 2;
         
+        const overallAccuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
+
         // Scoring based on Successes / Total
         const rootSuccesses = totalWords - rootMistakes;
         const posSuccesses = totalWords - posMistakes;
+
+        // Rating Logic
+        let rating = "Good Effort";
+        if (overallAccuracy === 100) rating = "Perfect Score!";
+        else if (overallAccuracy >= 90) rating = "Master!";
+        else if (overallAccuracy >= 80) rating = "Great Job";
 
         gameArea.innerHTML = `
             <div class="report-card">
@@ -411,6 +420,10 @@
                     </div>
                 </div>
                 
+                <div style="margin-top:20px;">Overall Accuracy</div>
+                <div class="total-score">${overallAccuracy}%</div>
+                <div style="color:#888; margin-bottom:20px;">${rating}</div>
+
                 <p style="color: #777; font-size: 0.9rem;">Take a screenshot for your teacher!</p>
                 <button onclick="resetProgress()" style="margin-top:20px;">Play Again</button>
             </div>
@@ -424,7 +437,7 @@
             return;
         }
 
-        // 1. Re-inject the standard game UI (Fixes duplicate content and missing progress bar)
+        // 1. Re-inject the standard game UI 
         gameArea.innerHTML = `
             <div class="level-indicator" id="level-indicator"></div>
             <div class="progress-container">
