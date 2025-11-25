@@ -328,7 +328,7 @@
         `;
     }
 
-    // --- SIMPLE VOICE ENGINE (Updated with voice selection logic) ---
+    // --- SIMPLE VOICE ENGINE (Updated rate for better clarity) ---
     let selectedVoice = null;
 
     function getEnglishVoice() {
@@ -362,7 +362,7 @@
                 if (voice) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.voice = voice;
-                    utterance.rate = 0.8; 
+                    utterance.rate = 0.7; // Decreased rate
                     window.speechSynthesis.speak(utterance);
                 }
             };
@@ -374,13 +374,13 @@
         if (voice) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = voice;
-            utterance.rate = 0.8; 
+            utterance.rate = 0.7; // Decreased rate
             utterance.lang = "en-US"; // Keep lang as a strong hint
             window.speechSynthesis.speak(utterance);
         } else {
              // If voice search fails, use generic settings (still better than default JP-accented English)
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.8; 
+            utterance.rate = 0.7; // Decreased rate
             utterance.lang = "en-US"; 
             window.speechSynthesis.speak(utterance);
         }
@@ -677,11 +677,12 @@
             // 1. Speak the root and POS
             speak(`${data.root} is a ${selectedPos}`);
             
-            // 2. Speak the example sentence after a pause
+            // 2. Speak the example sentence after a LONGER pause (1500ms)
             setTimeout(() => {
                 speak(data.exampleSentence);
-            }, 1000); 
+            }, 1500); 
 
+            // 3. Load the next level after an extended delay (4500ms total)
             setTimeout(() => {
                 currentLevelIndex++;
                 saveProgress(); 
@@ -692,7 +693,7 @@
                 } else {
                     loadLevel(currentLevelIndex);
                 }
-            }, 3500); // Increased delay to allow sentence playback
+            }, 4500); 
         } else {
             // WRONG POS
             btnElement.classList.add('wrong');
