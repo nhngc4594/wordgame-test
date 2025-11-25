@@ -34,23 +34,7 @@
             margin-bottom: 30px; 
         }
         
-        /* New UI for Meaning/POS */
-        .info-box {
-            background-color: #ecf0f1;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            color: #34495e;
-            text-align: center;
-        }
-        .info-box span {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .info-box p {
-            margin: 5px 0;
-        }
+        /* New UI for Meaning/POS (Removed - Keeping minimal style for main word) */
         .main-word-clickable {
             cursor: pointer;
             text-decoration: underline;
@@ -236,54 +220,55 @@
     // --- GLOBAL CONSTANTS ---
     const SECTION_SIZE = 10;
     
-    // --- THE ENHANCED DATA STRUCTURE (39 LEVELS TOTAL) ---
+    // --- THE SIMPLIFIED DATA STRUCTURE (39 LEVELS TOTAL) ---
+    // Removed: jpMeaning, derivativePos, jpPos, exampleSentence
     const levels = [
         // *** SECTION 1: CORE VOCABULARY ***
-        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞", exampleSentence: "She wants to create a new painting."},
-        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "わくわくした (Wakuwaku shita)", jpPos: "形容詞", exampleSentence: "The news will excite the fans."},
-        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "喉が渇いた (Nodo ga kawaita)", jpPos: "形容詞", exampleSentence: "My thirst for knowledge is endless."},
-        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "退屈した (Taikutsu shita)", jpPos: "形容詞", exampleSentence: "The lecture will bore the students."},
-        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "混乱した (Konran shita)", jpPos: "形容詞", exampleSentence: "Please do not confuse the issue."},
-        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "怖がった (Kowagatta)", jpPos: "形容詞", exampleSentence: "A sudden noise can scare a child."},
-        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "緊張した (Kinchō shita)", jpPos: "形容詞", exampleSentence: "He has the nerve to talk back."},
-        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "注意深い (Chūi-bukai)", jpPos: "形容詞", exampleSentence: "I care about your well-being."},
-        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "親しみやすい (Shitamiyasui)", jpPos: "形容詞", exampleSentence: "A good friend is hard to find."},
-        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "美しい (Utsukushii)", jpPos: "形容詞", exampleSentence: "The beauty of the ocean is amazing."},
+        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb" },
+        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb" },
+        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun" },
+        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb" },
+        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb" },
+        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb" },
+        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun" },
+        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb" },
+        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun" },
+        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun" },
         
         // *** SECTION 2: COMMON AFFIXES ***
-        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不正直 (Fushōjiki)", jpPos: "名詞", exampleSentence: "It is important to be honest with others."},
-        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb", derivativePos: "Noun", jpMeaning: "改善 (Kaizen)", jpPos: "名詞", exampleSentence: "We must improve our skills."},
-        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不可視性 (Fukashisei)", jpPos: "名詞", exampleSentence: "The moon is visible tonight."},
-        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb", derivativePos: "Noun", jpMeaning: "決定 (Kettei)", jpPos: "名詞", exampleSentence: "Please decide quickly."},
-        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "幸福 (Kōfuku)", jpPos: "名詞", exampleSentence: "She looks very happy today."},
-        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb", derivativePos: "Noun", jpMeaning: "意見の不一致 (Iken no fuitchi)", jpPos: "名詞", exampleSentence: "I agree with your suggestion."},
-        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb", derivativePos: "Noun", jpMeaning: "創造主 (Sōzōshu)", jpPos: "名詞", exampleSentence: "They create beautiful music."},
-        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "複雑な (Fukuzatsu na)", jpPos: "形容詞", exampleSentence: "Don't complicate the matter further."},
-        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "閉鎖された (Heisa sareta)", jpPos: "形容詞", exampleSentence: "Please close the door."},
-        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "危険な (Kiken na)", jpPos: "形容詞", exampleSentence: "There is danger ahead."},
+        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective" },
+        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb" },
+        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective" },
+        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb" },
+        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective" },
+        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb" },
+        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb" },
+        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb" },
+        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb" },
+        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun" },
 
         // *** SECTION 3: COMPLEX VOCABULARY ***
-        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "健康的な (Kenkō-teki na)", jpPos: "形容詞", exampleSentence: "Good health is important."},
-        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "うんざりするような (Unzari suru yō na)", jpPos: "形容詞", exampleSentence: "That smell disgusts me."},
-        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "興味深い (Kyōmi-bukai)", jpPos: "形容詞", exampleSentence: "I have a lot of interest in history."},
-        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "つまらない (Tsumaranai)", jpPos: "形容詞", exampleSentence: "The rain might bore the children."},
-        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "おかしい (Okashii)", jpPos: "形容詞", exampleSentence: "We had so much fun yesterday."},
-        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "迷惑な (Meiwaku na)", jpPos: "形容詞", exampleSentence: "His loud music annoys everyone."},
-        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "散らかった (Chirakatta)", jpPos: "形容詞", exampleSentence: "Please clean up your mess."},
-        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "高価な (Kōka na)", jpPos: "形容詞", exampleSentence: "The expense was too high."},
-        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "貴重な (Kichō na)", jpPos: "形容詞", exampleSentence: "I value your opinion greatly."},
-        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "価値のない (Kachi no nai)", jpPos: "形容詞", exampleSentence: "The worth of gold changes daily."},
+        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun" },
+        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb" },
+        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb" },
+        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb" },
+        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun" },
+        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb" },
+        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun" },
+        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun" },
+        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb" },
+        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun" },
 
         // *** SECTION 4: OPPOSITES/NEGATIVES (9 WORDS) ***
-        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "有名な (Yūmei na)", jpPos: "形容詞", exampleSentence: "She desires worldwide fame."},
-        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "未知の (Michi no)", jpPos: "形容詞", exampleSentence: "I know the answer."},
-        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "異なる (Kotonaru)", jpPos: "形容詞", exampleSentence: "Their opinions differ greatly."},
-        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "反対の (Hantai no)", jpPos: "形容詞", exampleSentence: "They strongly oppose the new rule."},
-        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不必要な (Fuhitsuyō na)", jpPos: "形容詞", exampleSentence: "Food is necessary for life."},
-        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不可能な (Fukanō na)", jpPos: "形容詞", exampleSentence: "Everything is possible with hard work."},
-        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った (Machigatta)", jpPos: "形容詞", exampleSentence: "Please correct your mistake."},
-        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な (Fukōhei na)", jpPos: "形容詞", exampleSentence: "The judge was fair to both sides."},
-        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な (Fushōjiki na)", jpPos: "形容詞", exampleSentence: "It is important to be honest."}
+        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun" },
+        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb" },
+        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb" },
+        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb" },
+        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective" },
+        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective" },
+        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective" },
+        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective" },
+        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective" }
     ];
 
     // Global State Variables
@@ -318,7 +303,7 @@
                 <ul>
                     <li>**Phase 1 (Root Word / 語根):** Select the core root word for the displayed derivative word. / 表示された派生語の核となる語根を選択します。</li>
                     <li>**Phase 2 (Part of Speech / 品詞):** Identify the primary part of speech (Noun, Verb, or Adjective) for the root word. / 語根の主要な品詞（名詞、動詞、または形容詞）を特定します。</li>
-                    <li>**Tip:** Turn up your volume to hear the words spoken aloud. / 音量を上げて、単語の音声を聞きましょう。</li>
+                    <li>**Tip:** Click the main word to hear it again. / メインの単語をクリックすると、もう一度聞くことができます。</li>
                 </ul>
             </div>
             <div class="btn-container">
@@ -328,7 +313,7 @@
         `;
     }
 
-    // --- SIMPLE VOICE ENGINE (Updated rate for better clarity) ---
+    // --- SIMPLE VOICE ENGINE (Rate kept low at 0.7) ---
     let selectedVoice = null;
 
     function getEnglishVoice() {
@@ -362,7 +347,7 @@
                 if (voice) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.voice = voice;
-                    utterance.rate = 0.7; // Decreased rate
+                    utterance.rate = 0.7; // Kept at 0.7
                     window.speechSynthesis.speak(utterance);
                 }
             };
@@ -374,13 +359,13 @@
         if (voice) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = voice;
-            utterance.rate = 0.7; // Decreased rate
+            utterance.rate = 0.7; // Kept at 0.7
             utterance.lang = "en-US"; // Keep lang as a strong hint
             window.speechSynthesis.speak(utterance);
         } else {
-             // If voice search fails, use generic settings (still better than default JP-accented English)
+             // If voice search fails, use generic settings 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.7; // Decreased rate
+            utterance.rate = 0.7; // Kept at 0.7
             utterance.lang = "en-US"; 
             window.speechSynthesis.speak(utterance);
         }
@@ -569,8 +554,6 @@
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
             
-            <div class="info-box" id="info-box"></div> 
-            
             <h1 id="main-word" class="main-word-clickable"></h1>
             <p class="question-text" id="instruction"></p>
             <div class="btn-container" id="buttons"></div>
@@ -581,8 +564,6 @@
         mainWordEl = document.getElementById('main-word');
         instructionEl = document.getElementById('instruction');
         buttonsEl = document.getElementById('buttons');
-        // Info box element needed for phase 1 info
-        const infoBoxEl = document.getElementById('info-box');
 
         updateProgressUI();
         
@@ -594,12 +575,8 @@
         // VISUALS PHASE 1
         mainWordEl.innerText = data.display;
         
-        // Add Meaning and POS info for the derivative word
-        infoBoxEl.innerHTML = `
-            <p>Meaning (意味): <span>${data.jpMeaning}</span></p>
-            <p>Part of Speech (品詞): <span>${data.derivativePos} (${data.jpPos})</span></p>
-        `;
-
+        // Removed: Logic to populate info-box
+        
         instructionEl.innerText = "What is the root word?";
         
         // AUDIO
@@ -613,19 +590,21 @@
         options.forEach(word => {
             const btn = document.createElement('button');
             btn.innerText = word;
-            btn.onclick = () => checkRoot(word, data, btn, infoBoxEl);
+            // Removed infoBoxEl argument
+            btn.onclick = () => checkRoot(word, data, btn); 
             buttonsEl.appendChild(btn);
         });
     }
 
-    function checkRoot(selectedWord, data, btnElement, infoBoxEl) {
+    // Removed infoBoxEl argument
+    function checkRoot(selectedWord, data, btnElement) {
         if (selectedWord === data.root) {
             // CORRECT ROOT
             btnElement.classList.add('correct');
             speak(data.root); 
             setTimeout(() => {
-                // Pass the infoBoxEl to Phase 2 for cleanup
-                loadPhase2(data, infoBoxEl); 
+                // Removed infoBoxEl argument
+                loadPhase2(data); 
             }, 800);
         } else {
             // WRONG ROOT
@@ -636,9 +615,9 @@
         }
     }
 
-    function loadPhase2(data, infoBoxEl) {
-        // Clear the Info Box content
-        infoBoxEl.innerHTML = ''; 
+    // Removed infoBoxEl argument
+    function loadPhase2(data) {
+        // Removed: Clear the Info Box content logic
 
         // Update UI for Phase 2
         mainWordEl.innerText = data.root;
@@ -674,15 +653,11 @@
             // CORRECT POS
             btnElement.classList.add('correct');
             
-            // 1. Speak the root and POS
+            // Speak the root and POS
             speak(`${data.root} is a ${selectedPos}`);
             
-            // 2. Speak the example sentence after a LONGER pause (1500ms)
-            setTimeout(() => {
-                speak(data.exampleSentence);
-            }, 1500); 
-
-            // 3. Load the next level after an extended delay (4500ms total)
+            // Load the next level after a quick delay (800ms)
+            // Removed the second setTimeout for the example sentence.
             setTimeout(() => {
                 currentLevelIndex++;
                 saveProgress(); 
@@ -693,7 +668,7 @@
                 } else {
                     loadLevel(currentLevelIndex);
                 }
-            }, 4500); 
+            }, 800); 
         } else {
             // WRONG POS
             btnElement.classList.add('wrong');
