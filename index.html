@@ -236,7 +236,7 @@
     // --- GLOBAL CONSTANTS ---
     const SECTION_SIZE = 10;
     
-    // --- THE DATA STRUCTURE (JP Meaning/POS restored) ---
+    // --- THE DATA STRUCTURE ---
     const levels = [
         // *** SECTION 1: CORE VOCABULARY ***
         { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞" },
@@ -296,7 +296,7 @@
     let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
     gameArea = document.getElementById('game-area');
 
-    // --- INITIAL HOME PAGE RENDER (Updated with explanation and JP translation) ---
+    // --- INITIAL HOME PAGE RENDER (No changes) ---
     function renderHomePage() {
         gameArea.innerHTML = `
             <h1>Root Word Game</h1>
@@ -328,7 +328,7 @@
         `;
     }
 
-    // --- SIMPLE VOICE ENGINE (Rate lowered to 0.6) ---
+    // --- SIMPLE VOICE ENGINE (Rate kept low at 0.6) ---
     let selectedVoice = null;
 
     function getEnglishVoice() {
@@ -362,7 +362,7 @@
                 if (voice) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.voice = voice;
-                    utterance.rate = 0.6; // Lowered rate to 0.6
+                    utterance.rate = 0.6; // Rate is 0.6
                     window.speechSynthesis.speak(utterance);
                 }
             };
@@ -374,13 +374,13 @@
         if (voice) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = voice;
-            utterance.rate = 0.6; // Lowered rate to 0.6
+            utterance.rate = 0.6; // Rate is 0.6
             utterance.lang = "en-US"; // Keep lang as a strong hint
             window.speechSynthesis.speak(utterance);
         } else {
              // If voice search fails, use generic settings 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.6; // Lowered rate to 0.6
+            utterance.rate = 0.6; // Rate is 0.6
             utterance.lang = "en-US"; 
             window.speechSynthesis.speak(utterance);
         }
@@ -581,7 +581,6 @@
         mainWordEl = document.getElementById('main-word');
         instructionEl = document.getElementById('instruction');
         buttonsEl = document.getElementById('buttons');
-        // Info box element needed for phase 1 info (Restored)
         const infoBoxEl = document.getElementById('info-box');
 
         updateProgressUI();
@@ -594,10 +593,10 @@
         // VISUALS PHASE 1
         mainWordEl.innerText = data.display;
         
-        // Add Meaning and POS info for the derivative word (Restored)
+        // Add Meaning and POS info for the derivative word (UPDATED LABEL)
         infoBoxEl.innerHTML = `
             <p>Meaning (意味): <span>${data.jpMeaning}</span></p>
-            <p>Part of Speech (品詞): <span>${data.derivativePos} (${data.jpPos})</span></p>
+            <p>Part of Speech in English (品詞): <span>${data.derivativePos} (${data.jpPos})</span></p>
         `;
 
         instructionEl.innerText = "What is the root word?";
@@ -624,7 +623,7 @@
             btnElement.classList.add('correct');
             speak(data.root); 
             setTimeout(() => {
-                // Increased delay to 1000ms
+                // Delay set to 1000ms
                 loadPhase2(data, infoBoxEl); 
             }, 1000);
         } else {
@@ -644,7 +643,8 @@
         mainWordEl.innerText = data.root;
         // Update click handler to speak the root word
         mainWordEl.onclick = () => speak(data.root); 
-        instructionEl.innerText = `Is "${data.root}" a Noun, Verb, or Adjective?`;
+        // Instruction text updated
+        instructionEl.innerText = `What is the Part of Speech in English for "${data.root}"?`;
         
         buttonsEl.innerHTML = '';
 
@@ -677,7 +677,7 @@
             // Speak the root and POS
             speak(`${data.root} is a ${selectedPos}`);
             
-            // Load the next level after a relaxed delay (1200ms)
+            // Load the next level after an extended delay (2500ms)
             setTimeout(() => {
                 currentLevelIndex++;
                 saveProgress(); 
@@ -688,7 +688,7 @@
                 } else {
                     loadLevel(currentLevelIndex);
                 }
-            }, 1200); 
+            }, 2500); 
         } else {
             // WRONG POS
             btnElement.classList.add('wrong');
