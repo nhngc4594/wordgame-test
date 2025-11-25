@@ -193,6 +193,13 @@
         .explanation-box ul {
             padding-left: 20px;
         }
+        .japanese-text {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            border-top: 1px dashed #bdc3c7;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
         /* --- VISUAL STYLING END --- */
     </style>
 </head>
@@ -265,30 +272,35 @@
     let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
     gameArea = document.getElementById('game-area');
 
-    // --- INITIAL HOME PAGE RENDER (Updated with explanation) ---
+    // --- INITIAL HOME PAGE RENDER (Updated with explanation and JP translation) ---
     function renderHomePage() {
         gameArea.innerHTML = `
             <h1>Root Word Game</h1>
             <div class="explanation-box">
+                
                 <h3>The Science Behind the Game 🧠</h3>
                 <p>
-                    This game is designed to build **latent language networks** in your brain. By repeatedly identifying **root words** and their **parts of speech (POS)**, you train your brain to perform these tasks **instantaneously**.
+                    このゲームは、脳内に潜在言語ネットワークを構築するために設計されています。これらのネットワークは、英単語の**語根（Root Word）**と**品詞（Part of Speech）**を、ほぼ**瞬間的**（目標 $\sim 10-15$ ナノ秒）に、高い精度で識別することができます。
                 </p>
                 <p>
-                    The goal is to shift this work away from the conscious executive part of your brain, **reducing computational load** during conversation. Mastering this game will help create a smoother, richer, and more natural English speaking and listening experience, significantly boosting your fluency.
+                    目的は、個人が英語を話したり聞いたりする際に、この処理を意識的な**実行機能**から、より高速な**潜在ネットワーク**に振り向け、会話中の**計算負荷を軽減**することです。このゲームを習得したからといってネイティブスピーカーになれるわけではありませんが、よりスムーズで、豊かで、自然な英会話とリスニングの体験のための強固な基盤を築き、あなたの楽しさと流暢さを大幅に向上させるでしょう。
+                </p>
+                <hr style="border-top: 1px dashed #bdc3c7; margin: 15px 0;">
+                <p class="japanese-text">
+                    This game is designed to build latent language networks in your brain which are capable of quickly and with high accuracy identifying **root words** in English and also identifying what **part of speech** a word is almost instantaneously (aiming for $\sim 10-15$ nanoseconds). The goal is to shift this work away from the conscious, executive part of your brain by offsetting the task to much faster latent networks as the individual speaks and hears English reducing **computational load** during conversation. Mastering this game alone will not make you a native speaker, but it will lay down a solid foundation for a smoother, richer, and more natural English speaking and listening experience, significantly boosting your fun and fluency.
                 </p>
                 
-                <h3>How to Play</h3>
+                <h3>How to Play / 遊び方</h3>
                 <ul>
-                    <li>**Phase 1 (Root Word):** Select the core root word for the displayed derivative word.</li>
-                    <li>**Phase 2 (Part of Speech):** Identify the primary part of speech (Noun, Verb, or Adjective) for the root word.</li>
-                    <li>**Tip:** Turn up your volume to hear the words spoken aloud.</li>
+                    <li>**Phase 1 (Root Word / 語根):** Select the core root word for the displayed derivative word. / 表示された派生語の核となる語根を選択します。</li>
+                    <li>**Phase 2 (Part of Speech / 品詞):** Identify the primary part of speech (Noun, Verb, or Adjective) for the root word. / 語根の主要な品詞（名詞、動詞、または形容詞）を特定します。</li>
+                    <li>**Tip:** Turn up your volume to hear the words spoken aloud. / 音量を上げて、単語の音声を聞きましょう。</li>
                 </ul>
             </div>
             <div class="btn-container">
-                <button onclick="initGame()">START GAME</button>
+                <button onclick="initGame()">START GAME / ゲーム開始</button>
             </div>
-            <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
+            <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over) / 進捗をリセット</div>
         `;
     }
 
@@ -333,7 +345,7 @@
     }
 
     function resetProgress() {
-        if(confirm("Start from the beginning?")) {
+        if(confirm("Start from the beginning? / 最初からやり直しますか？")) {
             localStorage.removeItem('wordGameProgress');
             localStorage.removeItem('wordGameRootMistakes');
             localStorage.removeItem('wordGamePosMistakes');
