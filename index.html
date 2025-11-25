@@ -171,6 +171,28 @@
             font-weight: bold;
             margin-top: 15px;
         }
+
+        /* New Explanation Styling */
+        .explanation-box {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        .explanation-box h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        .explanation-box ul {
+            padding-left: 20px;
+        }
         /* --- VISUAL STYLING END --- */
     </style>
 </head>
@@ -243,11 +265,26 @@
     let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
     gameArea = document.getElementById('game-area');
 
-    // --- INITIAL HOME PAGE RENDER ---
+    // --- INITIAL HOME PAGE RENDER (Updated with explanation) ---
     function renderHomePage() {
         gameArea.innerHTML = `
             <h1>Root Word Game</h1>
-            <p class="question-text">Turn up your volume to hear the words spoken aloud.</p>
+            <div class="explanation-box">
+                <h3>The Science Behind the Game 🧠</h3>
+                <p>
+                    This game is designed to build **latent language networks** in your brain. By repeatedly identifying **root words** and their **parts of speech (POS)**, you train your brain to perform these tasks **instantaneously**.
+                </p>
+                <p>
+                    The goal is to shift this work away from the conscious executive part of your brain, **reducing computational load** during conversation. Mastering this game will help create a smoother, richer, and more natural English speaking and listening experience, significantly boosting your fluency.
+                </p>
+                
+                <h3>How to Play</h3>
+                <ul>
+                    <li>**Phase 1 (Root Word):** Select the core root word for the displayed derivative word.</li>
+                    <li>**Phase 2 (Part of Speech):** Identify the primary part of speech (Noun, Verb, or Adjective) for the root word.</li>
+                    <li>**Tip:** Turn up your volume to hear the words spoken aloud.</li>
+                </ul>
+            </div>
             <div class="btn-container">
                 <button onclick="initGame()">START GAME</button>
             </div>
