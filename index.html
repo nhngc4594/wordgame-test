@@ -13,14 +13,14 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Aligned to the top */
-            min-height: 100vh; /* Ensure it takes full height */
+            justify-content: flex-start;
+            min-height: 100vh;
             max-width: 600px;
             margin: 0 auto;
         }
         #game-area {
             width: 100%;
-            margin-top: 20px; /* Added margin to prevent cutoff */
+            margin-top: 20px;
         }
         h1 { 
             color: #2c3e50;
@@ -34,7 +34,7 @@
             margin-bottom: 30px; 
         }
         
-        /* New UI for Meaning/POS (Restored) */
+        /* New UI for Meaning/POS */
         .info-box {
             background-color: #ecf0f1;
             padding: 10px;
@@ -68,14 +68,14 @@
         }
         .progress-bar {
             height: 100%;
-            background-color: #3498db; /* Clear Blue */
+            background-color: #3498db;
             border-radius: 15px;
             width: 0%;
             transition: width 0.4s ease-out;
         }
         .level-indicator {
             font-size: 1rem;
-            color: #2c3e50; /* Darker for better visibility */
+            color: #2c3e50;
             margin-bottom: 10px;
             text-align: left;
         }
@@ -88,17 +88,15 @@
 
         button {
             background-color: white;
-            border: 2px solid #3498db; /* Blue Border */
+            border: 2px solid #3498db;
             color: #2c3e50;
             padding: 16px;
             font-size: 1.3rem;
-            border-radius: 25px; /* FULLY ROUNDED BUTTONS (Pill Shape) */
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Stronger Shadow */
-            
-            /* HALO FIXES */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
             outline: none !important; 
             -webkit-appearance: none; 
         }
@@ -110,7 +108,7 @@
 
         button:hover { 
             background-color: #f5f5f5; 
-            border-color: #2c3e50; /* Darker border on hover */
+            border-color: #2c3e50;
         }
         
         button:active { 
@@ -122,12 +120,12 @@
         /* Feedback Styles */
         .correct { 
             background-color: #d4f8e5 !important; 
-            border-color: #2ecc71 !important; /* Bright Success Green */
+            border-color: #2ecc71 !important;
             color: #2ecc71 !important; 
         }
         .wrong { 
             background-color: #fbecec !important; 
-            border-color: #e74c3c !important; /* Clear Error Red */
+            border-color: #e74c3c !important;
             color: #e74c3c !important; 
             animation: shake 0.5s;
         }
@@ -158,6 +156,26 @@
         }
         .reset-link:hover {
             color: #2c3e50;
+        }
+
+        /* Example Sentence Box */
+        .example-box {
+            background-color: #f0f8ff; /* Light Blue/White */
+            border: 2px solid #3498db;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: bold;
+            text-align: left;
+        }
+        .example-box span {
+            font-weight: normal;
+            color: #7f8c8d;
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9rem;
         }
 
         /* Report Card Styles */
@@ -234,56 +252,65 @@
 
 <script>
     // --- GLOBAL CONSTANTS ---
-    const SECTION_SIZE = 10;
+    const SECTION_SIZE = 5; // CHECKPOINT EVERY 5 WORDS
+    const START_POS_AT_LEVEL = 10; // START POS PHASE AFTER 10 WORDS (2 SECTIONS)
     
-    // --- THE DATA STRUCTURE ---
+    // --- THE DATA STRUCTURE (Updated with simpleExample) ---
     const levels = [
-        // *** SECTION 1: CORE VOCABULARY ***
-        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞" },
-        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "わくわくした (Wakuwaku shita)", jpPos: "形容詞" },
-        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "喉が渇いた (Nodo ga kawaita)", jpPos: "形容詞" },
-        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "退屈した (Taikutsu shita)", jpPos: "形容詞" },
-        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "混乱した (Konran shita)", jpPos: "形容詞" },
-        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "怖がった (Kowagatta)", jpPos: "形容詞" },
-        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "緊張した (Kinchō shita)", jpPos: "形容詞" },
-        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "注意深い (Chūi-bukai)", jpPos: "形容詞" },
-        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "親しみやすい (Shitamiyasui)", jpPos: "形容詞" },
-        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "美しい (Utsukushii)", jpPos: "形容詞" },
+        // *** SECTION 1: CORE VOCABULARY (Root Only for beginners) ***
+        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞", simpleExample: "I like to **create** things." },
+        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "わくわくした (Wakuwaku shita)", jpPos: "形容詞", simpleExample: "The news will **excite** the crowd." },
+        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "喉が渇いた (Nodo ga kawaita)", jpPos: "形容詞", simpleExample: "Running gives me **thirst**." },
+        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "退屈した (Taikutsu shita)", jpPos: "形容詞", simpleExample: "This movie will **bore** me." },
+        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "混乱した (Konran shita)", jpPos: "形容詞", simpleExample: "The map will **confuse** him." },
         
-        // *** SECTION 2: COMMON AFFIXES ***
-        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不正直 (Fushōjiki)", jpPos: "名詞" },
-        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb", derivativePos: "Noun", jpMeaning: "改善 (Kaizen)", jpPos: "名詞" },
-        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不可視性 (Fukashisei)", jpPos: "名詞" },
-        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb", derivativePos: "Noun", jpMeaning: "決定 (Kettei)", jpPos: "名詞" },
-        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "幸福 (Kōfuku)", jpPos: "名詞" },
-        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb", derivativePos: "Noun", jpMeaning: "意見の不一致 (Iken no fuitchi)", jpPos: "名詞" },
-        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb", derivativePos: "Noun", jpMeaning: "創造主 (Sōzōshu)", jpPos: "名詞" },
-        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "複雑な (Fukuzatsu na)", jpPos: "形容詞" },
-        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "閉鎖された (Heisa sareta)", jpPos: "形容詞" },
-        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "危険な (Kiken na)", jpPos: "形容詞" },
+        // *** SECTION 2: CORE VOCABULARY (Root Only Continued) ***
+        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "怖がった (Kowagatta)", jpPos: "形容詞", simpleExample: "Ghosts **scare** me easily." },
+        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "緊張した (Kinchō shita)", jpPos: "形容詞", simpleExample: "She has a lot of **nerve**." },
+        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "注意深い (Chūi-bukai)", jpPos: "形容詞", simpleExample: "I **care** about my health." },
+        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "親しみやすい (Shitamiyasui)", jpPos: "形容詞", simpleExample: "He is my best **friend**." },
+        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "美しい (Utsukushii)", jpPos: "形容詞", simpleExample: "The flowers have great **beauty**." },
+        
+        // *** SECTION 3: COMMON AFFIXES (Root + POS Starts Here) ***
+        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不正直 (Fushōjiki)", jpPos: "名詞", simpleExample: "We must be **honest** with each other." },
+        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb", derivativePos: "Noun", jpMeaning: "改善 (Kaizen)", jpPos: "名詞", simpleExample: "We need to **improve** the system." },
+        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不可視性 (Fukashisei)", jpPos: "名詞", simpleExample: "The moon is not always **visible**." },
+        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb", derivativePos: "Noun", jpMeaning: "決定 (Kettei)", jpPos: "名詞", simpleExample: "I need to **decide** quickly." },
+        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "幸福 (Kōfuku)", jpPos: "名詞", simpleExample: "I am **happy** today." },
+        
+        // *** SECTION 4: COMMON AFFIXES (Continued) ***
+        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb", derivativePos: "Noun", jpMeaning: "意見の不一致 (Iken no fuitchi)", jpPos: "名詞", simpleExample: "Do you **agree** with my plan?" },
+        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb", derivativePos: "Noun", jpMeaning: "創造主 (Sōzōshu)", jpPos: "名詞", simpleExample: "I will **create** a new picture." },
+        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "複雑な (Fukuzatsu na)", jpPos: "形容詞", simpleExample: "Do not **complicate** the instructions." },
+        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "閉鎖された (Heisa sareta)", jpPos: "形容詞", simpleExample: "Please **close** the door quietly." },
+        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "危険な (Kiken na)", jpPos: "形容詞", simpleExample: "Be careful of the **danger**." },
 
-        // *** SECTION 3: COMPLEX VOCABULARY ***
-        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "健康的な (Kenkō-teki na)", jpPos: "形容詞" },
-        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "うんざりするような (Unzari suru yō na)", jpPos: "形容詞" },
-        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "興味深い (Kyōmi-bukai)", jpPos: "形容詞" },
-        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "つまらない (Tsumaranai)", jpPos: "形容詞" },
-        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "おかしい (Okashii)", jpPos: "形容詞" },
-        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "迷惑な (Meiwaku na)", jpPos: "形容詞" },
-        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "散らかった (Chirakatta)", jpPos: "形容詞" },
-        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "高価な (Kōka na)", jpPos: "形容詞" },
-        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "貴重な (Kichō na)", jpPos: "形容詞" },
-        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "価値のない (Kachi no nai)", jpPos: "形容詞" },
+        // *** SECTION 5: COMPLEX VOCABULARY ***
+        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "健康的な (Kenkō-teki na)", jpPos: "形容詞", simpleExample: "He has good **health**." },
+        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "うんざりするような (Unzari suru yō na)", jpPos: "形容詞", simpleExample: "The smell will **disgust** him." },
+        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "興味深い (Kyōmi-bukai)", jpPos: "形容詞", simpleExample: "This book will **interest** me." },
+        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "つまらない (Tsumaranai)", jpPos: "形容詞", simpleExample: "I hope you do not **bore** us." },
+        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "おかしい (Okashii)", jpPos: "形容詞", simpleExample: "We had a lot of **fun** at the party." },
+        
+        // *** SECTION 6: COMPLEX VOCABULARY (Continued) ***
+        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "迷惑な (Meiwaku na)", jpPos: "形容詞", simpleExample: "That sound will **annoy** the neighbors." },
+        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "散らかった (Chirakatta)", jpPos: "形容詞", simpleExample: "Please clean up the **mess**." },
+        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "高価な (Kōka na)", jpPos: "形容詞", simpleExample: "The cost is a large **expense**." },
+        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "貴重な (Kichō na)", jpPos: "形容詞", simpleExample: "I **value** your time." },
+        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "価値のない (Kachi no nai)", jpPos: "形容詞", simpleExample: "I know the **worth** of this gold." },
 
-        // *** SECTION 4: OPPOSITES/NEGATIVES (9 WORDS) ***
-        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "有名な (Yūmei na)", jpPos: "形容詞" },
-        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "未知の (Michi no)", jpPos: "形容詞" },
-        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "異なる (Kotonaru)", jpPos: "形容詞" },
-        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "反対の (Hantai no)", jpPos: "形容詞" },
-        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不必要な (Fuhitsuyō na)", jpPos: "形容詞" },
-        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不可能な (Fukanō na)", jpPos: "形容詞" },
-        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った (Machigatta)", jpPos: "形容詞" },
-        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な (Fukōhei na)", jpPos: "形容詞" },
-        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な (Fushōjiki na)", jpPos: "形容詞" }
+        // *** SECTION 7: OPPOSITES/NEGATIVES ***
+        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "有名な (Yūmei na)", jpPos: "形容詞", simpleExample: "The singer found great **fame**." },
+        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "未知の (Michi no)", jpPos: "形容詞", simpleExample: "I **know** the answer." },
+        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "異なる (Kotonaru)", jpPos: "形容詞", simpleExample: "We often **differ** in opinion." },
+        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "反対の (Hantai no)", jpPos: "形容詞", simpleExample: "I **oppose** that idea." },
+        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不必要な (Fuhitsuyō na)", jpPos: "形容詞", simpleExample: "Sleep is **necessary** for health." },
+        
+        // *** SECTION 8: OPPOSITES/NEGATIVES (Continued) ***
+        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不可能な (Fukanō na)", jpPos: "形容詞", simpleExample: "It is **possible** to win the game." },
+        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った (Machigatta)", jpPos: "形容詞", simpleExample: "Please **correct** my mistake." },
+        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な (Fukōhei na)", jpPos: "形容詞", simpleExample: "The rules must be **fair**." },
+        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な (Fushōjiki na)", jpPos: "形容詞", simpleExample: "She is always **honest**." }
     ];
 
     // Global State Variables
@@ -292,11 +319,14 @@
     let posMistakes = 0;
     let startOfSectionRootMistakes = 0;
     let startOfSectionPosMistakes = 0;
+    // New variable to track attempts per phase (for reward system feedback)
+    let currentRootAttempts = 0;
+    let currentPosAttempts = 0;
 
-    let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
+    let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea, exampleBox;
     gameArea = document.getElementById('game-area');
 
-    // --- INITIAL HOME PAGE RENDER (No changes) ---
+    // --- INITIAL HOME PAGE RENDER (Updated instruction for new phases) ---
     function renderHomePage() {
         gameArea.innerHTML = `
             <h1>Root Word Game</h1>
@@ -304,20 +334,15 @@
                 
                 <h3>The Science Behind the Game 🧠</h3>
                 <p>
-                    このゲームは、脳内に潜在言語ネットワークを構築するために設計されています。これらのネットワークは、英単語の**語根（Root Word）**と**品詞（Part of Speech）**を、ほぼ**瞬間的**（目標 $\sim 10-15$ ナノ秒）に、高い精度で識別することができます。
-                </p>
-                <p>
-                    目的は、個人が英語を話したり聞いたりする際に、この処理を意識的な**実行機能**から、より高速な**潜在ネットワーク**に振り向け、会話中の**計算負荷を軽減**することです。このゲームを習得したからといってネイティブスピーカーになれるわけではありませんが、よりスムーズで、豊かで、自然な英会話とリスニングの体験のための強固な基盤を築き、あなたの楽しさと流暢さを大幅に向上させるでしょう。
+                    このゲームは、英単語の**語根（Root Word）**と**品詞（Part of Speech）**の識別を、脳の**潜在ネットワーク**に組み込むために設計されています。高速で直感的なタスクに集中することで、会話中の**計算負荷を軽減**します。
                 </p>
                 <hr style="border-top: 1px dashed #bdc3c7; margin: 15px 0;">
-                <p class="japanese-text">
-                    This game is designed to build latent language networks in your brain which are capable of quickly and with high accuracy identifying **root words** in English and also identifying what **part of speech** a word is almost instantaneously (aiming for $\sim 10-15$ nanoseconds). The goal is to shift this work away from the conscious, executive part of your brain by offsetting the task to much faster latent networks as the individual speaks and hears English reducing **computational load** during conversation. Mastering this game alone will not make you a native speaker, but it will lay down a solid foundation for a smoother, richer, and more natural English speaking and listening experience, significantly boosting your fun and fluency.
-                </p>
                 
                 <h3>How to Play / 遊び方</h3>
                 <ul>
-                    <li>**Phase 1 (Root Word / 語根):** Select the core root word for the displayed derivative word. / 表示された派生語の核となる語根を選択します。</li>
-                    <li>**Phase 2 (Part of Speech / 品詞):** Identify the primary part of speech (Noun, Verb, or Adjective) for the root word. / 語根の主要な品詞（名詞、動詞、または形容詞）を特定します。</li>
+                    <li>**BEGINNER PHASE (Words 1-10):** Focus only on the **Root Word** to build confidence and flow.</li>
+                    <li>**ADVANCED PHASE (Words 11+):** Adds the **Part of Speech (POS)** challenge.</li>
+                    <li>**Sections:** The game features quick sections of **5 words** each.</li>
                     <li>**Tip:** Click the main word to hear it again. / メインの単語をクリックすると、もう一度聞くことができます。</li>
                 </ul>
             </div>
@@ -336,15 +361,13 @@
         
         const voices = window.speechSynthesis.getVoices();
         
-        // Prioritize a standard US or UK voice
         selectedVoice = voices.find(voice => 
             voice.lang === 'en-US' && voice.name.includes('Google') || 
-            voice.lang === 'en-US' && voice.name.includes('Samantha') || // iOS
+            voice.lang === 'en-US' && voice.name.includes('Samantha') ||
             voice.lang === 'en-GB' && voice.name.includes('Google') ||
             voice.lang === 'en-US'
         );
         
-        // Fallback to generic en-US voice if a specific one isn't found
         if (!selectedVoice) {
             selectedVoice = voices.find(voice => voice.lang === 'en-US');
         }
@@ -355,14 +378,14 @@
     function speak(text) {
         window.speechSynthesis.cancel();
         
-        // Need to load voices if they aren't ready yet (common on initial load)
         if (window.speechSynthesis.getVoices().length === 0) {
             window.speechSynthesis.onvoiceschanged = () => {
                 const voice = getEnglishVoice();
                 if (voice) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.voice = voice;
-                    utterance.rate = 0.6; // Rate is 0.6
+                    utterance.rate = 0.6;
+                    utterance.lang = "en-US";
                     window.speechSynthesis.speak(utterance);
                 }
             };
@@ -374,20 +397,19 @@
         if (voice) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = voice;
-            utterance.rate = 0.6; // Rate is 0.6
-            utterance.lang = "en-US"; // Keep lang as a strong hint
+            utterance.rate = 0.6;
+            utterance.lang = "en-US";
             window.speechSynthesis.speak(utterance);
         } else {
-             // If voice search fails, use generic settings 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.6; // Rate is 0.6
+            utterance.rate = 0.6;
             utterance.lang = "en-US"; 
             window.speechSynthesis.speak(utterance);
         }
     }
 
 
-    // --- SAVE SYSTEM (No changes) ---
+    // --- SAVE & PROGRESS FUNCTIONS (Updated SECTION_SIZE in UI) ---
     function initGame() {
         const savedIndex = localStorage.getItem('wordGameProgress');
         const savedRootMistakes = localStorage.getItem('wordGameRootMistakes');
@@ -432,7 +454,6 @@
         }
     }
 
-    // --- PROGRESS UI UPDATE (No changes) ---
     function updateProgressUI() {
         progressBar = document.getElementById('progress-bar');
         levelIndicator = document.getElementById('level-indicator');
@@ -450,8 +471,20 @@
             | Word ${wordInCurrentSection} of ${wordsInSection || SECTION_SIZE}
         `;
     }
+
+    function handleNextLevelTransition(data) {
+        currentLevelIndex++;
+        saveProgress(); 
+        
+        // CHECKPOINT LOGIC (Every 5 words)
+        if (currentLevelIndex < levels.length && (currentLevelIndex % SECTION_SIZE === 0)) {
+            showCheckpoint();
+        } else {
+            loadLevel(currentLevelIndex);
+        }
+    }
     
-    // --- CHECKPOINT SCREEN (No changes) ---
+    // --- CHECKPOINT SCREEN & FINAL REPORT (No changes needed) ---
     function showCheckpoint() {
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
@@ -462,8 +495,11 @@
 
         const wordsInThisSection = (sectionNum * SECTION_SIZE < levels.length) ? SECTION_SIZE : levels.length % SECTION_SIZE;
         
-        const totalSectionTasks = wordsInThisSection * 2; 
-        const totalCorrect = totalSectionTasks - (sectionRootMistakes + sectionPosMistakes);
+        // Total tasks is 10 for advanced, 5 for beginner (if current level index is <= 10)
+        const totalSectionTasks = (currentLevelIndex > START_POS_AT_LEVEL) ? wordsInThisSection * 2 : wordsInThisSection; 
+        const mistakesInSection = (currentLevelIndex > START_POS_AT_LEVEL) ? (sectionRootMistakes + sectionPosMistakes) : sectionRootMistakes;
+
+        const totalCorrect = totalSectionTasks - mistakesInSection;
         
         const sectionAccuracy = Math.round((totalCorrect / totalSectionTasks) * 100);
         
@@ -479,12 +515,13 @@
                             ${wordsInThisSection - sectionRootMistakes}/${wordsInThisSection}
                         </span>
                     </div>
+                    ${currentLevelIndex > START_POS_AT_LEVEL ? `
                     <div class="stat-row">
                         <span><strong>Part of Speech Score:</strong></span> 
                         <span style="color: ${sectionPosMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
                             ${wordsInThisSection - sectionPosMistakes}/${wordsInThisSection}
                         </span>
-                    </div>
+                    </div>` : ''}
                     <hr style="margin: 10px 0; border-top: 1px solid #ccc;">
                     <div class="stat-row" style="font-weight: bold; font-size: 1.2rem;">
                         <span>Section Accuracy:</span> 
@@ -506,7 +543,6 @@
         startOfSectionPosMistakes = posMistakes;
     }
 
-    // --- FINAL REPORT CARD (No changes) ---
     function showReportCard() {
         const totalWords = levels.length;
         const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
@@ -553,6 +589,39 @@
         `;
     }
 
+    // --- NEW FUNCTION: Show Example Sentence and Load Next Word ---
+    function showExampleAndNext(data) {
+        // Clear buttons and instruction
+        buttonsEl.innerHTML = '';
+        instructionEl.innerText = "Example Sentence (文の例):";
+        
+        // Display the sentence
+        gameArea.innerHTML += `
+            <div class="example-box" id="example-box">
+                ${data.simpleExample}
+                <span>Tap anywhere to continue...</span>
+            </div>
+        `;
+        exampleBox = document.getElementById('example-box');
+
+        // Speak the root word and example sentence
+        speak(`${data.root}. Example. ${data.simpleExample}.`);
+
+        // Wait for user click to proceed (simulates next button)
+        exampleBox.onclick = () => {
+            handleNextLevelTransition(data);
+        };
+        // Also listen for a click on the main game area
+        gameArea.onclick = (e) => {
+            // Prevent interference with the reset link or main elements
+            if (e.target.id !== 'reset-link' && e.target.tagName !== 'BUTTON') {
+                handleNextLevelTransition(data);
+                // Remove the general listener after use
+                gameArea.onclick = null; 
+            }
+        };
+    }
+
     // --- GAME LOGIC ---
     function loadLevel(index) {
         if (index >= levels.length) {
@@ -561,8 +630,13 @@
         }
 
         const data = levels[index];
+        const isBeginnerPhase = index < START_POS_AT_LEVEL;
 
-        // 1. Re-inject the standard game UI 
+        // Reset attempt counters for the new word
+        currentRootAttempts = 0;
+        currentPosAttempts = 0;
+
+        // 1. Inject the standard game UI 
         gameArea.innerHTML = `
             <div class="level-indicator" id="level-indicator"></div>
             <div class="progress-container">
@@ -574,10 +648,10 @@
             <h1 id="main-word" class="main-word-clickable"></h1>
             <p class="question-text" id="instruction"></p>
             <div class="btn-container" id="buttons"></div>
-            <div class="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
+            <div class="reset-link" id="reset-link" onclick="resetProgress()">Reset Progress (Start Over)</div>
         `;
         
-        // 2. CRITICAL: Re-map the elements after destroying and remaking the inner HTML
+        // 2. CRITICAL: Re-map the elements
         mainWordEl = document.getElementById('main-word');
         instructionEl = document.getElementById('instruction');
         buttonsEl = document.getElementById('buttons');
@@ -585,15 +659,12 @@
 
         updateProgressUI();
         
-        // --- PHASE 1 START ---
+        // --- PHASE 1 START (Root Word) ---
         
-        // Click listener for repeating the word
         mainWordEl.onclick = () => speak(data.display);
         
-        // VISUALS PHASE 1
         mainWordEl.innerText = data.display;
         
-        // Add Meaning and POS info for the derivative word (UPDATED LABEL)
         infoBoxEl.innerHTML = `
             <p>Meaning (意味): <span>${data.jpMeaning}</span></p>
             <p>Part of Speech in English (品詞): <span>${data.derivativePos} (${data.jpPos})</span></p>
@@ -601,7 +672,6 @@
 
         instructionEl.innerText = "What is the root word?";
         
-        // AUDIO
         speak(data.display);
 
         // BUTTONS PHASE 1 (Randomize)
@@ -612,20 +682,32 @@
         options.forEach(word => {
             const btn = document.createElement('button');
             btn.innerText = word;
-            btn.onclick = () => checkRoot(word, data, btn, infoBoxEl);
+            // Pass the phase state to the click handler
+            btn.onclick = () => checkRoot(word, data, btn, infoBoxEl, isBeginnerPhase); 
             buttonsEl.appendChild(btn);
         });
     }
 
-    function checkRoot(selectedWord, data, btnElement, infoBoxEl) {
+    function checkRoot(selectedWord, data, btnElement, infoBoxEl, isBeginnerPhase) {
+        currentRootAttempts++;
+
         if (selectedWord === data.root) {
             // CORRECT ROOT
             btnElement.classList.add('correct');
             speak(data.root); 
-            setTimeout(() => {
-                // Delay set to 1000ms
-                loadPhase2(data, infoBoxEl); 
-            }, 1000);
+            
+            // Check for phase skip (Beginner Mode)
+            if (isBeginnerPhase) {
+                // Skip POS, show example, and proceed to next word
+                setTimeout(() => {
+                    showExampleAndNext(data);
+                }, 1000); 
+            } else {
+                // Proceed to POS Phase (Advanced Mode)
+                setTimeout(() => {
+                    loadPhase2(data, infoBoxEl); 
+                }, 1000);
+            }
         } else {
             // WRONG ROOT
             btnElement.classList.add('wrong');
@@ -641,9 +723,7 @@
 
         // Update UI for Phase 2
         mainWordEl.innerText = data.root;
-        // Update click handler to speak the root word
         mainWordEl.onclick = () => speak(data.root); 
-        // Instruction text updated
         instructionEl.innerText = `What is the Part of Speech in English for "${data.root}"?`;
         
         buttonsEl.innerHTML = '';
@@ -663,9 +743,10 @@
     }
 
     function checkPOS(selectedPos, data, btnElement) {
+        currentPosAttempts++;
         let isCorrect = (selectedPos === data.pos);
 
-        // Ambiguous Word Fix: 'Correct' can be an Adjective or a Verb. 
+        // Ambiguous Word Fix
         if (data.root === 'Correct' && (selectedPos === 'Adjective' || selectedPos === 'Verb')) {
             isCorrect = true;
         }
@@ -677,17 +758,9 @@
             // Speak the root and POS
             speak(`${data.root} is a ${selectedPos}`);
             
-            // Load the next level after an extended delay (2500ms)
+            // Show example sentence before loading next level
             setTimeout(() => {
-                currentLevelIndex++;
-                saveProgress(); 
-                
-                // CHECKPOINT LOGIC: Pause game at the end of a section
-                if (currentLevelIndex < levels.length && (currentLevelIndex % SECTION_SIZE === 0)) {
-                    showCheckpoint();
-                } else {
-                    loadLevel(currentLevelIndex);
-                }
+                 showExampleAndNext(data);
             }, 2500); 
         } else {
             // WRONG POS
