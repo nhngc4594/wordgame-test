@@ -258,59 +258,59 @@
     // --- THE DATA STRUCTURE (Updated with simpleExample) ---
     const levels = [
         // *** SECTION 1: CORE VOCABULARY (Root Only for beginners) ***
-        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞", simpleExample: "I like to **create** things." },
-        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "わくわくした (Wakuwaku shita)", jpPos: "形容詞", simpleExample: "The news will **excite** the crowd." },
-        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "喉が渇いた (Nodo ga kawaita)", jpPos: "形容詞", simpleExample: "Running gives me **thirst**." },
-        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "退屈した (Taikutsu shita)", jpPos: "形容詞", simpleExample: "This movie will **bore** me." },
-        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "混乱した (Konran shita)", jpPos: "形容詞", simpleExample: "The map will **confuse** him." },
+        { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な (Sōzō-teki na)", jpPos: "形容詞", simpleExample: "I like to create things." },
+        { display: "Excited", root: "Excite", decoys: ["Exci", "Cited"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "わくわくした (Wakuwaku shita)", jpPos: "形容詞", simpleExample: "The news will excite the crowd." },
+        { display: "Thirsty", root: "Thirst", decoys: ["Thirs", "Hersty"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "喉が渇いた (Nodo ga kawaita)", jpPos: "形容詞", simpleExample: "Running gives me thirst." },
+        { display: "Bored", root: "Bore", decoys: ["Bo", "Ord"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "退屈した (Taikutsu shita)", jpPos: "形容詞", simpleExample: "This movie will bore me." },
+        { display: "Confused", root: "Confuse", decoys: ["Confu", "Fused"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "混乱した (Konran shita)", jpPos: "形容詞", simpleExample: "The map will confuse him." },
         
         // *** SECTION 2: CORE VOCABULARY (Root Only Continued) ***
-        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "怖がった (Kowagatta)", jpPos: "形容詞", simpleExample: "Ghosts **scare** me easily." },
-        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "緊張した (Kinchō shita)", jpPos: "形容詞", simpleExample: "She has a lot of **nerve**." },
-        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "注意深い (Chūi-bukai)", jpPos: "形容詞", simpleExample: "I **care** about my health." },
-        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "親しみやすい (Shitamiyasui)", jpPos: "形容詞", simpleExample: "He is my best **friend**." },
-        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "美しい (Utsukushii)", jpPos: "形容詞", simpleExample: "The flowers have great **beauty**." },
+        { display: "Scared", root: "Scare", decoys: ["Sca", "Aird"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "怖がった (Kowagatta)", jpPos: "形容詞", simpleExample: "Ghosts scare me easily." },
+        { display: "Nervous", root: "Nerve", decoys: ["Nerva", "Ous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "緊張した (Kinchō shita)", jpPos: "形容詞", simpleExample: "She has a lot of nerve." },
+        { display: "Careful", root: "Care", decoys: ["Cay", "Are"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "注意深い (Chūi-bukai)", jpPos: "形容詞", simpleExample: "I care about my health." },
+        { display: "Friendly", root: "Friend", decoys: ["Frie", "End"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "親しみやすい (Shitamiyasui)", jpPos: "形容詞", simpleExample: "He is my best friend." },
+        { display: "Beautiful", root: "Beauty", decoys: ["Beaut", "Be"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "美しい (Utsukushii)", jpPos: "形容詞", simpleExample: "The flowers have great beauty." },
         
         // *** SECTION 3: COMMON AFFIXES (Root + POS Starts Here) ***
-        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不正直 (Fushōjiki)", jpPos: "名詞", simpleExample: "We must be **honest** with each other." },
-        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb", derivativePos: "Noun", jpMeaning: "改善 (Kaizen)", jpPos: "名詞", simpleExample: "We need to **improve** the system." },
-        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不可視性 (Fukashisei)", jpPos: "名詞", simpleExample: "The moon is not always **visible**." },
-        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb", derivativePos: "Noun", jpMeaning: "決定 (Kettei)", jpPos: "名詞", simpleExample: "I need to **decide** quickly." },
-        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "幸福 (Kōfuku)", jpPos: "名詞", simpleExample: "I am **happy** today." },
+        { display: "Dishonesty", root: "Honest", decoys: ["Dishon", "Esty"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不正直 (Fushōjiki)", jpPos: "名詞", simpleExample: "We must be honest with each other." },
+        { display: "Improvement", root: "Improve", decoys: ["Impro", "Ment"], pos: "Verb", derivativePos: "Noun", jpMeaning: "改善 (Kaizen)", jpPos: "名詞", simpleExample: "We need to improve the system." },
+        { display: "Invisibility", root: "Visible", decoys: ["Invisib", "Lity"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "不可視性 (Fukashisei)", jpPos: "名詞", simpleExample: "The moon is not always visible." },
+        { display: "Decision", root: "Decide", decoys: ["Decis", "Cision"], pos: "Verb", derivativePos: "Noun", jpMeaning: "決定 (Kettei)", jpPos: "名詞", simpleExample: "I need to decide quickly." },
+        { display: "Happiness", root: "Happy", decoys: ["Happ", "Iness"], pos: "Adjective", derivativePos: "Noun", jpMeaning: "幸福 (Kōfuku)", jpPos: "名詞", simpleExample: "I am happy today." },
         
         // *** SECTION 4: COMMON AFFIXES (Continued) ***
-        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb", derivativePos: "Noun", jpMeaning: "意見の不一致 (Iken no fuitchi)", jpPos: "名詞", simpleExample: "Do you **agree** with my plan?" },
-        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb", derivativePos: "Noun", jpMeaning: "創造主 (Sōzōshu)", jpPos: "名詞", simpleExample: "I will **create** a new picture." },
-        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "複雑な (Fukuzatsu na)", jpPos: "形容詞", simpleExample: "Do not **complicate** the instructions." },
-        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "閉鎖された (Heisa sareta)", jpPos: "形容詞", simpleExample: "Please **close** the door quietly." },
-        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "危険な (Kiken na)", jpPos: "形容詞", simpleExample: "Be careful of the **danger**." },
+        { display: "Disagreement", root: "Agree", decoys: ["Disagreem", "Dis"], pos: "Verb", derivativePos: "Noun", jpMeaning: "意見の不一致 (Iken no fuitchi)", jpPos: "名詞", simpleExample: "Do you agree with my plan?" },
+        { display: "Creator", root: "Create", decoys: ["Creat", "Or"], pos: "Verb", derivativePos: "Noun", jpMeaning: "創造主 (Sōzōshu)", jpPos: "名詞", simpleExample: "I will create a new picture." },
+        { display: "Complicated", root: "Complicate", decoys: ["Compli", "Cated"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "複雑な (Fukuzatsu na)", jpPos: "形容詞", simpleExample: "Do not complicate the instructions." },
+        { display: "Closed", root: "Close", decoys: ["Clo", "Osed"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "閉鎖された (Heisa sareta)", jpPos: "形容詞", simpleExample: "Please close the door quietly." },
+        { display: "Dangerous", root: "Danger", decoys: ["Dange", "Gerous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "危険な (Kiken na)", jpPos: "形容詞", simpleExample: "Be careful of the danger." },
 
         // *** SECTION 5: COMPLEX VOCABULARY ***
-        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "健康的な (Kenkō-teki na)", jpPos: "形容詞", simpleExample: "He has good **health**." },
-        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "うんざりするような (Unzari suru yō na)", jpPos: "形容詞", simpleExample: "The smell will **disgust** him." },
-        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "興味深い (Kyōmi-bukai)", jpPos: "形容詞", simpleExample: "This book will **interest** me." },
-        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "つまらない (Tsumaranai)", jpPos: "形容詞", simpleExample: "I hope you do not **bore** us." },
-        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "おかしい (Okashii)", jpPos: "形容詞", simpleExample: "We had a lot of **fun** at the party." },
+        { display: "Healthy", root: "Health", decoys: ["Hell", "Elthy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "健康的な (Kenkō-teki na)", jpPos: "形容詞", simpleExample: "He has good health." },
+        { display: "Disgusting", root: "Disgust", decoys: ["Dis", "Gust"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "うんざりするような (Unzari suru yō na)", jpPos: "形容詞", simpleExample: "The smell will disgust him." },
+        { display: "Interesting", root: "Interest", decoys: ["Inter", "Esting"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "興味深い (Kyōmi-bukai)", jpPos: "形容詞", simpleExample: "This book will interest me." },
+        { display: "Boring", root: "Bore", decoys: ["Bo", "Ring"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "つまらない (Tsumaranai)", jpPos: "形容詞", simpleExample: "I hope you do not bore us." },
+        { display: "Funny", root: "Fun", decoys: ["Fu", "Unny"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "おかしい (Okashii)", jpPos: "形容詞", simpleExample: "We had a lot of fun at the party." },
         
         // *** SECTION 6: COMPLEX VOCABULARY (Continued) ***
-        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "迷惑な (Meiwaku na)", jpPos: "形容詞", simpleExample: "That sound will **annoy** the neighbors." },
-        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "散らかった (Chirakatta)", jpPos: "形容詞", simpleExample: "Please clean up the **mess**." },
-        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "高価な (Kōka na)", jpPos: "形容詞", simpleExample: "The cost is a large **expense**." },
-        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "貴重な (Kichō na)", jpPos: "形容詞", simpleExample: "I **value** your time." },
-        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "価値のない (Kachi no nai)", jpPos: "形容詞", simpleExample: "I know the **worth** of this gold." },
+        { display: "Annoying", root: "Annoy", decoys: ["Anno", "Oying"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "迷惑な (Meiwaku na)", jpPos: "形容詞", simpleExample: "That sound will annoy the neighbors." },
+        { display: "Messy", root: "Mess", decoys: ["Me", "Essy"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "散らかった (Chirakatta)", jpPos: "形容詞", simpleExample: "Please clean up the mess." },
+        { display: "Expensive", root: "Expense", decoys: ["Expe", "Sive"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "高価な (Kōka na)", jpPos: "形容詞", simpleExample: "The cost is a large expense." },
+        { display: "Valuable", root: "Value", decoys: ["Val", "Able"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "貴重な (Kichō na)", jpPos: "形容詞", simpleExample: "I value your time." },
+        { display: "Worthless", root: "Worth", decoys: ["Wore", "Less"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "価値のない (Kachi no nai)", jpPos: "形容詞", simpleExample: "I know the worth of this gold." },
 
         // *** SECTION 7: OPPOSITES/NEGATIVES ***
-        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "有名な (Yūmei na)", jpPos: "形容詞", simpleExample: "The singer found great **fame**." },
-        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "未知の (Michi no)", jpPos: "形容詞", simpleExample: "I **know** the answer." },
-        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "異なる (Kotonaru)", jpPos: "形容詞", simpleExample: "We often **differ** in opinion." },
-        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "反対の (Hantai no)", jpPos: "形容詞", simpleExample: "I **oppose** that idea." },
-        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不必要な (Fuhitsuyō na)", jpPos: "形容詞", simpleExample: "Sleep is **necessary** for health." },
+        { display: "Famous", root: "Fame", decoys: ["Fama", "Mous"], pos: "Noun", derivativePos: "Adjective", jpMeaning: "有名な (Yūmei na)", jpPos: "形容詞", simpleExample: "The singer found great fame." },
+        { display: "Unknown", root: "Know", decoys: ["No", "Own"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "未知の (Michi no)", jpPos: "形容詞", simpleExample: "I know the answer." },
+        { display: "Different", root: "Differ", decoys: ["Diff", "Erent"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "異なる (Kotonaru)", jpPos: "形容詞", simpleExample: "We often differ in opinion." },
+        { display: "Opposite", root: "Oppose", decoys: ["Oppo", "Site"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "反対の (Hantai no)", jpPos: "形容詞", simpleExample: "I oppose that idea." },
+        { display: "Unnecessary", root: "Necessary", decoys: ["Uness", "Sary"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不必要な (Fuhitsuyō na)", jpPos: "形容詞", simpleExample: "Sleep is necessary for health." },
         
         // *** SECTION 8: OPPOSITES/NEGATIVES (Continued) ***
-        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不可能な (Fukanō na)", jpPos: "形容詞", simpleExample: "It is **possible** to win the game." },
-        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った (Machigatta)", jpPos: "形容詞", simpleExample: "Please **correct** my mistake." },
-        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な (Fukōhei na)", jpPos: "形容詞", simpleExample: "The rules must be **fair**." },
-        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な (Fushōjiki na)", jpPos: "形容詞", simpleExample: "She is always **honest**." }
+        { display: "Impossible", root: "Possible", decoys: ["Imposs", "Sible"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不可能な (Fukanō na)", jpPos: "形容詞", simpleExample: "It is possible to win the game." },
+        { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った (Machigatta)", jpPos: "形容詞", simpleExample: "Please correct my mistake." },
+        { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な (Fukōhei na)", jpPos: "形容詞", simpleExample: "The rules must be fair." },
+        { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な (Fushōjiki na)", jpPos: "形容詞", simpleExample: "She is always honest." }
     ];
 
     // Global State Variables
