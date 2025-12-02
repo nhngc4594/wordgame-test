@@ -376,9 +376,6 @@
     }
 
     function speak(text) {
-        // NOTE: window.speechSynthesis.cancel() is intentionally NOT here, 
-        // as it is called at the start of loadLevel and showExampleAndNext 
-        // to prevent cut-off and overlaps.
         
         if (window.speechSynthesis.getVoices().length === 0) {
             window.speechSynthesis.onvoiceschanged = () => {
@@ -488,6 +485,9 @@
     
     // --- CHECKPOINT SCREEN & FINAL REPORT (Logic adjusted for SECTION_SIZE=5) ---
     function showCheckpoint() {
+        // *** Cancel speech before displaying checkpoint screen ***
+        window.speechSynthesis.cancel();
+        
         const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
         const nextSection = sectionNum + 1;
         
@@ -593,14 +593,14 @@
 
     // --- NEW FUNCTION: Show Example Sentence and Load Next Word ---
     function showExampleAndNext(data) {
-        // *** FIX 2: Cancel any lingering audio from the POS confirmation before the example starts ***
+        // *** FIX 2: Cancel ALL speech right before generating the next audio ***
         window.speechSynthesis.cancel();
         
         // Clear buttons and instruction
         buttonsEl.innerHTML = '';
         instructionEl.innerText = "Example Sentence (文の例):";
         
-        // Display the sentence
+        // Display the sentence (uses HTML for bolding)
         gameArea.innerHTML += `
             <div class="example-box" id="example-box">
                 ${data.simpleExample}
@@ -609,12 +609,15 @@
         `;
         exampleBox = document.getElementById('example-box');
 
-        // Speak the root word and example sentence
-        speak(`${data.root}. Example. ${data.simpleExample}.`);
+        // *** FIX 3: Clean the text for speech (remove ** and "Example" introduction) ***
+        const cleanExampleText = data.simpleExample.replace(/\*\*/g, '');
+        const speechText = `${data.root}. ${cleanExampleText}`; // Removed "Example."
+        speak(speechText);
 
         // Wait for user click to proceed (simulates next button)
         exampleBox.onclick = () => {
             handleNextLevelTransition(data);
+            gameArea.removeEventListener('click', transitionHandler); // Ensure we clean up listener
         };
         // Also listen for a click on the main game area (but only once)
         const transitionHandler = (e) => {
