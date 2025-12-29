@@ -132,6 +132,7 @@
             outline: none !important;
             position: relative;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
         
         button::before {
@@ -154,7 +155,14 @@
         
         button:focus { 
             outline: none !important; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+            border-color: #3498db !important;
+        }
+        
+        button:focus-visible {
+            outline: none !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
+            border-color: #3498db !important;
         }
 
         button:hover { 
@@ -1253,6 +1261,11 @@
             const btn = document.createElement('button');
             btn.innerText = word;
             btn.onclick = () => checkRoot(word, data, btn, infoBoxEl, isBeginnerPhase);
+            // Prevent focus on mobile
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.click();
+            });
             buttonsEl.appendChild(btn);
         });
     }
@@ -1307,6 +1320,11 @@
             const btn = document.createElement('button');
             btn.innerHTML = `${opt.en} <span class="jp-sub">${opt.jp}</span>`;
             btn.onclick = () => checkPOS(opt.en, data, btn);
+            // Prevent focus on mobile
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.click();
+            });
             buttonsEl.appendChild(btn);
         });
     }
