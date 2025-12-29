@@ -569,7 +569,7 @@
     gameArea = document.getElementById('game-area');
 
     // === STORAGE HELPERS ===
-    async function saveToStorage(key, value) {
+    function saveToStorage(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
         } catch (e) {
@@ -577,7 +577,7 @@
         }
     }
 
-    async function loadFromStorage(key) {
+    function loadFromStorage(key) {
         try {
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : null;
@@ -760,9 +760,12 @@
 
     // === UI RENDERING ===
     function renderHomePage() {
-        // Check if there's a game in progress
+        // Force reload from localStorage to get the latest state
         const saved = loadFromStorage('gameProgress');
         const hasProgress = saved && saved.index > 0 && saved.index < levels.length;
+        
+        console.log('Saved progress:', saved); // Debug log
+        console.log('Has progress:', hasProgress); // Debug log
         
         gameArea.innerHTML = `
             <h1>🎯 Root Word Game</h1>
@@ -771,7 +774,7 @@
                 <div class="explanation-box" style="background: #e8f5e9; border: 2px solid #4caf50;">
                     <h3 style="color: #2e7d32; border-color: #4caf50;">📌 Game In Progress</h3>
                     <p style="margin: 10px 0;">
-                        You're currently at word <strong>${saved.index}/${levels.length}</strong>. 
+                        You're currently at word <strong>${saved.index + 1}/${levels.length}</strong>. 
                         Would you like to continue or start fresh?
                     </p>
                 </div>
@@ -816,7 +819,7 @@
             
             <div class="btn-container">
                 ${hasProgress ? `
-                    <button onclick="initGame()" style="background: #4caf50; border-color: #4caf50; color: white;">
+                    <button onclick="continueGame()" style="background: #4caf50; border-color: #4caf50; color: white;">
                         ▶️ CONTINUE GAME / ゲームを続ける
                     </button>
                     <button onclick="startNewGame()">🔄 START NEW GAME / 新しいゲーム</button>
@@ -828,6 +831,25 @@
             </div>
             <div class="reset-link" onclick="resetProgress()">Reset All Progress / すべての進捗をリセット</div>
         `;
+    }
+    
+    function continueGame() {
+        // Load the saved game state
+        const saved = loadFromStorage('gameProgress');
+        if (saved) {
+            currentLevelIndex = saved.index || 0;
+            rootMistakes = saved.rootMistakes || 0;
+            posMistakes = saved.posMistakes || 0;
+            
+            if (saved.sessionStats) {
+                sessionStats = { ...sessionStats, ...saved.sessionStats };
+            }
+            
+            startOfSectionRootMistakes = rootMistakes;
+            startOfSectionPosMistakes = posMistakes;
+        }
+        
+        loadLevel(currentLevelIndex);
     }
     
     function startNewGame() {
@@ -993,6 +1015,9 @@
         if (sectionAccuracy === 100) badge = '<div class="achievement">⭐ PERFECT SECTION!</div>';
         else if (sectionAccuracy >= 90) badge = '<div class="achievement">🎯 EXCELLENT!</div>';
         
+        // Save progress before showing checkpoint
+        saveProgress();
+        
         gameArea.innerHTML = `
             <div class="report-card">
                 <div class="score-header" style="color:#3498db;">✓ Checkpoint Complete!</div>
@@ -1022,7 +1047,7 @@
 
                 <p style="color: #777; margin-top:20px;">Ready for Section ${nextSection}?</p>
                 <div class="btn-container" style="margin-top: 20px;">
-                    <button onclick="loadLevel(${currentLevelIndex})">Continue → Section ${nextSection}</button>
+                    <button onclick="continueFromCheckpoint()">Continue → Section ${nextSection}</button>
                     <button onclick="renderHomePage()" style="background: white; border-color: #95a5a6; color: #7f8c8d;">🏠 Back to Home</button>
                 </div>
             </div>
@@ -1030,6 +1055,10 @@
 
         startOfSectionRootMistakes = rootMistakes;
         startOfSectionPosMistakes = posMistakes;
+    }
+    
+    function continueFromCheckpoint() {
+        loadLevel(currentLevelIndex);
     }
 
     async function showReportCard() {
@@ -1128,10 +1157,12 @@
 
     function handleNextLevelTransition(data) {
         currentLevelIndex++;
-        saveProgress();
+        saveProgress(); 
         
         if (currentLevelIndex < levels.length && (currentLevelIndex % SECTION_SIZE === 0)) {
             showCheckpoint();
+        } else if (currentLevelIndex >= levels.length) {
+            showReportCard();
         } else {
             loadLevel(currentLevelIndex);
         }
