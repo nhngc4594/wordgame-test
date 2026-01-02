@@ -525,6 +525,20 @@
     cursor: pointer;
     filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
 }
+  /* This makes the character gently bob up and down */
+@keyframes daikonWobble {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+.daikon-sprite {
+    font-size: 100px;
+    cursor: pointer;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+    /* This line triggers the animation */
+    animation: daikonWobble 2s ease-in-out infinite;
+}
     </style>
 </head>
 <body>
@@ -824,7 +838,7 @@ let isDaikonActive = false;
         console.log('Has progress:', hasProgress); // Debug log
         
         gameArea.innerHTML = `
-            <h1>🎯 Root Word Game</h1>
+            <h1>🥕 Root Word Game</h1>
             
             ${hasProgress ? `
                 <div class="explanation-box" style="background: #e8f5e9; border: 2px solid #4caf50;">
@@ -1447,7 +1461,7 @@ let isDaikonActive = false;
                             <button onclick="daikonFeedback('hard')" style="padding:8px; font-size:0.7rem;">Challenging</button>
                         </div>
                     </div>
-                    <div class="daikon-sprite">🥬</div>
+                    <div class="daikon-sprite">🥕</div>
                 </div>
             `;
             document.body.insertAdjacentHTML('beforeend', daikonHTML);
