@@ -479,6 +479,52 @@
             button { font-size: 1.1rem; padding: 14px; }
             .stats-grid { grid-template-columns: 1fr; }
         }
+   .daikon-container {
+    position: fixed;
+    bottom: -400px; /* Starts hidden below the screen */
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+}
+
+.daikon-container.active {
+    bottom: 0; /* Pops up into view */
+}
+
+.speech-bubble {
+    background: #ffffff;
+    border: 4px solid #2ecc71;
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    max-width: 250px;
+    font-family: sans-serif;
+    text-align: center;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+/* The little triangle at the bottom of the bubble */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: 40px;
+    border-width: 20px 20px 0;
+    border-style: solid;
+    border-color: #ffffff transparent;
+}
+
+.daikon-sprite {
+    font-size: 100px;
+    cursor: pointer;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+}
     </style>
 </head>
 <body>
@@ -549,6 +595,8 @@
 
     // === STATE MANAGEMENT ===
     let currentLevelIndex = 0;
+    let daikonCooldown = 0;
+let isDaikonActive = false;
     let rootMistakes = 0;
     let posMistakes = 0;
     let startOfSectionRootMistakes = 0;
@@ -1206,6 +1254,7 @@
             }
         };
         gameArea.addEventListener('click', transitionHandler);
+        summonDaikon();
     }
 
     function loadLevel(index) {
@@ -1377,6 +1426,75 @@
 
     // Start
     renderHomePage();
+    function summonDaikon() {
+    // Don't show him if he's on a break
+    if (daikonCooldown > 0) {
+        daikonCooldown--;
+        return;
+    }
+
+    // Trigger: 5-word streak AND only on the example page
+    if (sessionStats.streak >= 5) {
+        // Only create him if he's not already there
+        if (!document.getElementById('daikon-sensei')) {
+            const daikonHTML = `
+                <div id="daikon-sensei" class="daikon-container">
+                    <div class="speech-bubble" id="daikon-bubble">
+                        How is the game going?<br>調子はどうですか？
+                        <div class="btn-container" style="margin-top:10px; flex-direction:row; gap:5px;">
+                            <button onclick="daikonFeedback('easy')" style="padding:8px; font-size:0.7rem;">Easy</button>
+                            <button onclick="daikonFeedback('soso')" style="padding:8px; font-size:0.7rem;">So-so</button>
+                            <button onclick="daikonFeedback('hard')" style="padding:8px; font-size:0.7rem;">Challenging</button>
+                        </div>
+                    </div>
+                    <div class="daikon-sprite">🥬</div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', daikonHTML);
+            // Small delay to trigger the "pop up" animation
+            setTimeout(() => document.getElementById('daikon-sensei').classList.add('active'), 100);
+            isDaikonActive = true;
+        }
+    }
+}
+
+function daikonFeedback(choice) {
+    const bubble = document.getElementById('daikon-bubble');
+    if (choice === 'easy') {
+        bubble.innerHTML = `It looks too easy for you! Want to skip ahead 10 words?<br>10問飛ばして進みますか？
+            <div class="btn-container" style="margin-top:10px;">
+                <button onclick="changeDifficulty(10)">Yes, skip ahead!</button>
+                <button onclick="dismissDaikon()">No, I'm fine here</button>
+            </div>`;
+    } else if (choice === 'hard') {
+        bubble.innerHTML = `I see! This is a tough section. Want to go back 5 words to practice more?<br>少し戻って練習しますか？
+            <div class="btn-container" style="margin-top:10px;">
+                <button onclick="changeDifficulty(-5)">Yes, go back</button>
+                <button onclick="dismissDaikon()">No, I'll keep trying</button>
+            </div>`;
+    } else {
+        bubble.innerHTML = `Great! You are doing perfectly. Keep it up!<br>その調子で頑張りましょう！`;
+        daikonCooldown = 10; // Don't return for 10 words
+        setTimeout(dismissDaikon, 2500);
+    }
+}
+
+function dismissDaikon() {
+    const d = document.getElementById('daikon-sensei');
+    if (d) {
+        d.classList.remove('active');
+        setTimeout(() => d.remove(), 600);
+    }
+    isDaikonActive = false;
+}
+
+function changeDifficulty(amount) {
+    // Moves the level index forward or backward
+    currentLevelIndex = Math.max(0, Math.min(currentLevelIndex + amount, levels.length - 1));
+    daikonCooldown = 10; 
+    dismissDaikon();
+    loadLevel(currentLevelIndex);
+}
 </script>
 </body>
 </html>
