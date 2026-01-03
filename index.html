@@ -2,554 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Root Word Game - Enhanced</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Root Word Master</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #d1e7dd 0%, #b8dac8 100%);
-            text-align: center;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            min-height: 100vh;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        #game-area {
-            width: 100%;
-            margin-top: 20px;
-        }
-        
-        h1 { 
-            color: #2c3e50;
-            font-size: 2.8rem; 
-            margin-bottom: 5px; 
-            margin-top: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .question-text { 
-            font-size: 1.3rem; 
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        
-        .info-box {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            color: #34495e;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .info-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .info-box span {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .info-box p {
-            margin: 8px 0;
-        }
-        
-        .main-word-clickable {
-            cursor: pointer;
-            text-decoration: underline;
-            text-decoration-thickness: 2px;
-            text-decoration-color: #3498db;
-            transition: all 0.3s ease;
-        }
-        
-        .main-word-clickable:hover {
-            color: #3498db;
-            transform: scale(1.05);
-        }
-        
-        .main-word-clickable:active {
-            transform: scale(0.98);
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --bg: #f4f7f6;
         }
 
-        .progress-container {
-            width: 100%;
-            background-color: #bdc3c7;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
             border-radius: 15px;
-            margin-bottom: 20px;
-            height: 14px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            text-align: center;
         }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
-            border-radius: 15px;
-            width: 0%;
-            transition: width 0.4s ease-out;
-            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.4);
+
+        .main-word-clickable {
+            font-size: 3rem;
+            color: var(--primary);
+            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        
-        .level-indicator {
-            font-size: 1rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            text-align: left;
-            font-weight: 600;
-        }
+
+        .main-word-clickable:active { transform: scale(0.95); }
 
         .btn-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-top: 20px;
         }
 
         button {
-            background-color: white;
-            border: 3px solid #3498db;
-            color: #2c3e50;
-            padding: 18px;
-            font-size: 1.3rem;
-            border-radius: 25px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: white;
+            color: var(--dark);
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-            outline: none !important;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
-        
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.1);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        button:focus { 
-            outline: none !important; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
-            border-color: #3498db !important;
-        }
-        
-        button:focus-visible {
-            outline: none !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15) !important;
-            border-color: #3498db !important;
+
+        /* Highlight for the first click */
+        button.selected-once {
+            border: 4px solid var(--dark) !important;
+            background-color: #ebf5fb;
         }
 
-        button:hover { 
-            background-color: #f5f5f5; 
-            border-color: #2c3e50;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-        
-        button:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        
-        .correct { 
-            background-color: #d4f8e5 !important; 
-            border-color: #2ecc71 !important;
-            color: #2ecc71 !important;
-            animation: correctPulse 0.6s ease;
-        }
-        
-        @keyframes correctPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .wrong { 
-            background-color: #fbecec !important; 
-            border-color: #e74c3c !important;
-            color: #e74c3c !important; 
-            animation: shake 0.5s;
-        }
+        button.correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
+        button.wrong { background-color: var(--danger) !important; color: white; border-color: var(--danger); }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        /* Daikon / Carrot Guide Styles */
+        .daikon-container {
+            position: fixed;
+            bottom: -400px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
         }
-
-        .jp-sub {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: normal;
-            color: #95a5a6;
-            margin-top: 4px;
-        }
-
-        .reset-link {
-            margin-top: 30px;
-            color: #95a5a6;
-            text-decoration: underline;
+        .daikon-container.active { bottom: 0; }
+        .speech-bubble {
+            background: white;
+            border: 4px solid var(--success);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            max-width: 220px;
             font-size: 0.9rem;
-            cursor: pointer;
-            transition: color 0.2s;
         }
-        
-        .reset-link:hover {
-            color: #2c3e50;
+        .daikon-sprite { font-size: 80px; animation: wobble 2s ease-in-out infinite; }
+        @keyframes wobble {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-10px) rotate(2deg); }
         }
 
         .example-box {
-            background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
-            border: 3px solid #3498db;
-            padding: 20px;
-            border-radius: 15px;
+            background: #e8f6fe;
+            padding: 15px;
+            border-left: 5px solid var(--primary);
             margin-top: 20px;
-            font-size: 1.1rem;
-            color: #2c3e50;
-            font-weight: bold;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .example-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
-        
-        .example-box span {
-            font-weight: normal;
-            color: #7f8c8d;
-            display: block;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            border-radius: 5px;
             font-style: italic;
         }
 
-        .report-card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideIn 0.5s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .score-header {
-            font-size: 1.8rem;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        
-        .score-breakdown {
-            text-align: left;
-            margin-bottom: 25px;
-            background-color: #ecf0f1;
-            padding: 20px;
-            border-radius: 12px;
-        }
-        
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 12px 0;
-            font-size: 1.1rem;
-            color: #2c3e50;
-            border-bottom: 1px solid #dcdcdc;
-            padding-bottom: 8px;
-        }
-        
-        .total-score {
-            font-size: 3.5rem;
-            color: #2ecc71;
-            font-weight: bold;
-            margin-top: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .explanation-box {
-            background-color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: left;
-            font-size: 0.95rem;
-            color: #34495e;
-            line-height: 1.6;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .explanation-box h3 {
-            color: #2c3e50;
-            margin-top: 0;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
-            font-size: 1.2rem;
-        }
-        
-        .explanation-box ul {
-            padding-left: 20px;
-        }
-        
-        .explanation-box li {
-            margin: 8px 0;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .settings-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .settings-row label {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .settings-row input[type="range"] {
-            width: 150px;
-        }
-        
-        .settings-row select {
-            padding: 5px 10px;
+        .progress-bar {
+            height: 10px;
+            background: #eee;
             border-radius: 5px;
-            border: 2px solid #3498db;
-        }
-
-        /* Stats Display */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card h4 {
-            margin: 0 0 10px 0;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        .stat-card .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #3498db;
-        }
-
-        /* Leaderboard */
-        .leaderboard {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .leaderboard-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .leaderboard-entry:hover {
-            background: #ecf0f1;
-            transform: translateX(5px);
-        }
-        
-        .leaderboard-rank {
-            font-weight: bold;
-            color: #3498db;
-            min-width: 30px;
-        }
-        
-        .leaderboard-name {
-            flex: 1;
-            text-align: left;
-            margin-left: 15px;
-        }
-        
-        .leaderboard-score {
-            font-weight: bold;
-            color: #2ecc71;
-        }
-
-        .tab-container {
-            display: flex;
-            gap: 10px;
+            overflow: hidden;
             margin-bottom: 20px;
         }
-        
-        .tab {
-            flex: 1;
-            padding: 12px;
-            background: white;
-            border: 2px solid #3498db;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        
-        .tab:hover {
-            background: #f0f8ff;
-        }
-        
-        .tab.active {
-            background: #3498db;
-            color: white;
-        }
-
-        /* Achievement Badge */
-        .achievement {
-            display: inline-block;
-            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
-        }
-
-        @media (max-width: 480px) {
-            h1 { font-size: 2rem; }
-            button { font-size: 1.1rem; padding: 14px; }
-            .stats-grid { grid-template-columns: 1fr; }
-        }
-   .daikon-container {
-    position: fixed;
-    bottom: -400px; /* Starts hidden below the screen */
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 1000;
-}
-
-.daikon-container.active {
-    bottom: 0; /* Pops up into view */
-}
-
-.speech-bubble {
-    background: #ffffff;
-    border: 4px solid #2ecc71;
-    border-radius: 20px;
-    padding: 15px;
-    margin-bottom: 10px;
-    position: relative;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    max-width: 250px;
-    font-family: sans-serif;
-    text-align: center;
-    font-size: 1rem;
-    color: #2c3e50;
-}
-
-/* The little triangle at the bottom of the bubble */
-.speech-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -20px;
-    right: 40px;
-    border-width: 20px 20px 0;
-    border-style: solid;
-    border-color: #ffffff transparent;
-}
-
-.daikon-sprite {
-    font-size: 100px;
-    cursor: pointer;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
-}
-  /* This makes the character gently bob up and down */
-@keyframes daikonWobble {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
-    100% { transform: translateY(0) rotate(0deg); }
-}
-
-.daikon-sprite {
-    font-size: 100px;
-    cursor: pointer;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
-    /* This line triggers the animation */
-    animation: daikonWobble 2s ease-in-out infinite;
-}
+        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
-    <div id="game-area"></div>
+
+<div id="game-container">
+    <div id="game-area">
+        </div>
+</div>
 
 <script>
-    // === CONFIGURATION ===
-    const SECTION_SIZE = 5;
-    const START_POS_AT_LEVEL = 10;
-    
-    // === EXPANDED DATA ===
+    // === 1. DATA & STATE ===
     const levels = [
         // SECTION 1: Basic Emotions & States
         { display: "Creative", root: "Create", decoys: ["Creation", "Crate"], pos: "Verb", derivativePos: "Adjective", jpMeaning: "創造的な", jpPos: "形容詞", simpleExample: "I like to **create** things.", category: "emotions" },
@@ -605,674 +184,39 @@
         { display: "Incorrect", root: "Correct", decoys: ["Incor", "Rect"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "間違った", jpPos: "形容詞", simpleExample: "Please **correct** my mistake.", category: "description" },
         { display: "Unfair", root: "Fair", decoys: ["Unfai", "Air"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不公平な", jpPos: "形容詞", simpleExample: "The rules must be **fair**.", category: "description" },
         { display: "Dishonest", root: "Honest", decoys: ["Dishon", "Nest"], pos: "Adjective", derivativePos: "Adjective", jpMeaning: "不正直な", jpPos: "形容詞", simpleExample: "She is always **honest**.", category: "personality" }
+    
     ];
 
-    // === STATE MANAGEMENT ===
+    const START_POS_AT_LEVEL = 10; 
     let currentLevelIndex = 0;
-    let daikonCooldown = 0;
-let isDaikonActive = false;
     let rootMistakes = 0;
     let posMistakes = 0;
-    let startOfSectionRootMistakes = 0;
-    let startOfSectionPosMistakes = 0;
-    let currentRootAttempts = 0;
-    let currentPosAttempts = 0;
-    
-    // Audio Settings
-    let audioSettings = {
-        rate: 0.6,
-        volume: 1.0,
-        enabled: true
-    };
-    
-    // Session Stats
+    let lastClickedButton = null;
+    let daikonCooldown = 0;
+
     let sessionStats = {
-        startTime: null,
-        totalTime: 0,
-        perfectWords: 0,
         streak: 0,
-        maxStreak: 0
+        maxStreak: 0,
+        perfectWords: 0,
+        startTime: Date.now()
     };
 
-    let selectedVoice = null;
-    let mainWordEl, instructionEl, buttonsEl, progressBar, levelIndicator, gameArea;
-    gameArea = document.getElementById('game-area');
+    const gameArea = document.getElementById('game-area');
 
-    // === STORAGE HELPERS ===
-    function saveToStorage(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (e) {
-            console.log('Storage save failed:', e);
-        }
-    }
+    // === 2. CORE GAME FUNCTIONS ===
 
-    function loadFromStorage(key) {
-        try {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : null;
-        } catch (e) {
-            console.log('Storage load failed:', e);
-            return null;
-        }
-    }
-
-    async function saveSharedScore(name, accuracy, time) {
-        try {
-            const score = {
-                name,
-                accuracy,
-                time,
-                date: new Date().toISOString()
-            };
-            
-            if (window.storage) {
-                await window.storage.set(`leaderboard:${name}_${Date.now()}`, JSON.stringify(score), true);
-            }
-        } catch (e) {
-            console.log('Shared save failed:', e);
-        }
-    }
-
-    async function loadLeaderboard() {
-        try {
-            if (window.storage) {
-                const result = await window.storage.list('leaderboard:', true);
-                if (result && result.keys) {
-                    const scores = [];
-                    for (const key of result.keys) {
-                        const data = await window.storage.get(key, true);
-                        if (data && data.value) {
-                            scores.push(JSON.parse(data.value));
-                        }
-                    }
-                    return scores.sort((a, b) => b.accuracy - a.accuracy).slice(0, 10);
-                }
-            }
-        } catch (e) {
-            console.log('Leaderboard load failed:', e);
-        }
-        return [];
-    }
-
-    // === AUDIO ENGINE ===
-    function getEnglishVoice() {
-        if (selectedVoice) return selectedVoice;
-        
-        const voices = window.speechSynthesis.getVoices();
-        
-        // Priority order for best quality voices
-        const voicePriority = [
-            // Premium natural voices (iOS/Mac)
-            v => v.lang === 'en-US' && v.name.includes('Samantha'),
-            v => v.lang === 'en-GB' && v.name.includes('Daniel'),
-            v => v.lang === 'en-US' && v.name.includes('Alex'),
-            // Google voices (Chrome)
-            v => v.lang === 'en-US' && v.name.includes('Google US English'),
-            v => v.lang === 'en-GB' && v.name.includes('Google UK English'),
-            // Microsoft voices (Edge)
-            v => v.lang === 'en-US' && (v.name.includes('Microsoft David') || v.name.includes('Microsoft Zira')),
-            v => v.lang === 'en-GB' && v.name.includes('Microsoft Hazel'),
-            // Natural voices
-            v => v.name.toLowerCase().includes('natural') && v.lang.startsWith('en'),
-            // Any en-US voice
-            v => v.lang === 'en-US',
-            // Any English voice
-            v => v.lang.startsWith('en')
-        ];
-        
-        for (const priorityFn of voicePriority) {
-            selectedVoice = voices.find(priorityFn);
-            if (selectedVoice) break;
-        }
-        
-        return selectedVoice;
-    }
-
-    function speak(text) {
-        if (!audioSettings.enabled) return;
-        
-        window.speechSynthesis.cancel();
-        
-        // Handle problematic words - add slight pause to prevent distortion
-        let cleanText = text;
-        const problematicWords = ['thirst', 'first', 'worst', 'burst'];
-        problematicWords.forEach(word => {
-            const regex = new RegExp(`\\b${word}\\b`, 'gi');
-            cleanText = cleanText.replace(regex, `${word}.`);
-        });
-        
-        if (window.speechSynthesis.getVoices().length === 0) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                const voice = getEnglishVoice();
-                if (voice) {
-                    const utterance = new SpeechSynthesisUtterance(cleanText);
-                    utterance.voice = voice;
-                    utterance.rate = audioSettings.rate;
-                    utterance.volume = audioSettings.volume;
-                    utterance.lang = "en-US";
-                    utterance.pitch = 1.0;
-                    window.speechSynthesis.speak(utterance);
-                }
-            };
-            return;
-        }
-
-        const voice = getEnglishVoice();
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        if (voice) utterance.voice = voice;
-        utterance.rate = audioSettings.rate;
-        utterance.volume = audioSettings.volume;
-        utterance.lang = "en-US";
-        utterance.pitch = 1.0;
-        window.speechSynthesis.speak(utterance);
-    }
-
-    // === PROGRESS TRACKING ===
-    function initGame() {
-        const saved = loadFromStorage('gameProgress');
-        if (saved) {
-            currentLevelIndex = saved.index || 0;
-            rootMistakes = saved.rootMistakes || 0;
-            posMistakes = saved.posMistakes || 0;
-            
-            // Restore session stats if they exist
-            if (saved.sessionStats) {
-                sessionStats = { ...sessionStats, ...saved.sessionStats };
-            }
-        }
-        
-        const settings = loadFromStorage('audioSettings');
-        if (settings) {
-            audioSettings = { ...audioSettings, ...settings };
-        }
-        
-        startOfSectionRootMistakes = rootMistakes;
-        startOfSectionPosMistakes = posMistakes;
-        
-        // Only set startTime if it's not already set (new session)
-        if (!sessionStats.startTime) {
-            sessionStats.startTime = Date.now();
-        }
-        
-        if (currentLevelIndex >= levels.length) currentLevelIndex = 0;
-        
-        loadLevel(currentLevelIndex);
-    }
-
-    function saveProgress() {
-        saveToStorage('gameProgress', {
-            index: currentLevelIndex,
-            rootMistakes,
-            posMistakes,
-            sessionStats
-        });
-    }
-
-    function resetProgress() {
-        if(confirm("Start from the beginning? / 最初からやり直しますか？")) {
-            currentLevelIndex = 0;
-            rootMistakes = 0;
-            posMistakes = 0;
-            startOfSectionRootMistakes = 0;
-            startOfSectionPosMistakes = 0;
-            sessionStats = {
-                startTime: Date.now(),
-                totalTime: 0,
-                perfectWords: 0,
-                streak: 0,
-                maxStreak: 0
-            };
-            saveProgress();
-            renderHomePage();
-        }
-    }
-
-    // === UI RENDERING ===
     function renderHomePage() {
-        // Force reload from localStorage to get the latest state
-        const saved = loadFromStorage('gameProgress');
-        const hasProgress = saved && saved.index > 0 && saved.index < levels.length;
-        
-        console.log('Saved progress:', saved); // Debug log
-        console.log('Has progress:', hasProgress); // Debug log
-        
         gameArea.innerHTML = `
-            <h1>🥕 Root Word Game</h1>
-            
-            ${hasProgress ? `
-                <div class="explanation-box" style="background: #e8f5e9; border: 2px solid #4caf50;">
-                    <h3 style="color: #2e7d32; border-color: #4caf50;">📌 Game In Progress</h3>
-                    <p style="margin: 10px 0;">
-                        You're currently at word <strong>${saved.index + 1}/${levels.length}</strong>. 
-                        Would you like to continue or start fresh?
-                    </p>
-                </div>
-            ` : ''}
-            
-            <div class="explanation-box">
-                <h3>The Science Behind the Game 🧠</h3>
-                <p>
-                    このゲームは、英単語の**語根（Root Word）**と**品詞（Part of Speech）**の識別を、
-                    脳の**潜在ネットワーク**に組み込むために設計されています。
-                    高速で直感的なタスクに集中することで、会話中の**計算負荷を軽減**します。
-                </p>
-                <hr style="border-top: 1px dashed #bdc3c7; margin: 15px 0;">
-                
-                <h3>How to Play / 遊び方</h3>
-                <ul>
-                    <li><strong>BEGINNER PHASE (Words 1-10):</strong> Focus only on the Root Word</li>
-                    <li><strong>ADVANCED PHASE (Words 11+):</strong> Adds Part of Speech challenge</li>
-                    <li><strong>Sections:</strong> Quick 5-word sections with checkpoints</li>
-                    <li><strong>Tip:</strong> Click the main word to hear it again</li>
-                </ul>
-            </div>
-            
-            <div class="settings-panel">
-                <h3 style="margin-top:0;">⚙️ Audio Settings</h3>
-                <div class="settings-row">
-                    <label>Speech Enabled:</label>
-                    <input type="checkbox" id="audio-enabled" ${audioSettings.enabled ? 'checked' : ''} 
-                           onchange="toggleAudio(this.checked)">
-                </div>
-                <div class="settings-row">
-                    <label>Speech Rate: <span id="rate-value">${audioSettings.rate.toFixed(1)}</span></label>
-                    <input type="range" id="speech-rate" min="0.3" max="1.5" step="0.1" 
-                           value="${audioSettings.rate}" oninput="updateRate(this.value)">
-                </div>
-                <div class="settings-row">
-                    <label>Volume: <span id="volume-value">${Math.round(audioSettings.volume * 100)}%</span></label>
-                    <input type="range" id="volume" min="0" max="1" step="0.1" 
-                           value="${audioSettings.volume}" oninput="updateVolume(this.value)">
-                </div>
-            </div>
-            
-            <div class="btn-container">
-                ${hasProgress ? `
-                    <button onclick="continueGame()" style="background: #4caf50; border-color: #4caf50; color: white;">
-                        ▶️ CONTINUE GAME / ゲームを続ける
-                    </button>
-                    <button onclick="startNewGame()">🔄 START NEW GAME / 新しいゲーム</button>
-                ` : `
-                    <button onclick="initGame()">START GAME / ゲーム開始</button>
-                `}
-                <button onclick="showStats()">📊 View Stats / 統計を見る</button>
-                <button onclick="showLeaderboard()">🏆 Leaderboard / ランキング</button>
-            </div>
-            <div class="reset-link" onclick="resetProgress()">Reset All Progress / すべての進捗をリセット</div>
+            <h1>Root Word Master</h1>
+            <p>Master English suffixes and prefixes!</p>
+            <button onclick="startLevel(0)">Start New Game</button>
+            ${currentLevelIndex > 0 ? `<button onclick="loadLevel(currentLevelIndex)">Resume Game</button>` : ''}
         `;
-    }
-    
-    function continueGame() {
-        // Load the saved game state
-        const saved = loadFromStorage('gameProgress');
-        if (saved) {
-            currentLevelIndex = saved.index || 0;
-            rootMistakes = saved.rootMistakes || 0;
-            posMistakes = saved.posMistakes || 0;
-            
-            if (saved.sessionStats) {
-                sessionStats = { ...sessionStats, ...saved.sessionStats };
-            }
-            
-            startOfSectionRootMistakes = rootMistakes;
-            startOfSectionPosMistakes = posMistakes;
-        }
-        
-        loadLevel(currentLevelIndex);
-    }
-    
-    function startNewGame() {
-        if(confirm("Start a new game? Your current progress will be lost. / 新しいゲームを始めますか？現在の進捗は失われます。")) {
-            currentLevelIndex = 0;
-            rootMistakes = 0;
-            posMistakes = 0;
-            startOfSectionRootMistakes = 0;
-            startOfSectionPosMistakes = 0;
-            sessionStats = {
-                startTime: Date.now(),
-                totalTime: 0,
-                perfectWords: 0,
-                streak: 0,
-                maxStreak: 0
-            };
-            saveProgress();
-            initGame();
-        }
-    }
-
-    function updateProgressUI() {
-        progressBar = document.getElementById('progress-bar');
-        levelIndicator = document.getElementById('level-indicator');
-
-        const totalSections = Math.ceil(levels.length / SECTION_SIZE);
-        const currentSection = Math.floor(currentLevelIndex / SECTION_SIZE) + 1;
-        const wordInCurrentSection = (currentLevelIndex % SECTION_SIZE) + 1;
-        const wordsInSection = (currentSection < totalSections) ? SECTION_SIZE : levels.length % SECTION_SIZE;
-        
-        const percentage = (currentLevelIndex / levels.length) * 100;
-        progressBar.style.width = percentage + "%";
-        
-        levelIndicator.innerHTML = `
-            Section ${currentSection}/${totalSections} | 
-            Word ${wordInCurrentSection}/${wordsInSection || SECTION_SIZE} | 
-            Streak: ${sessionStats.streak} 🔥
-        `;
-    }
-
-    async function showStats() {
-        const allStats = loadFromStorage('gameProgress') || {};
-        const history = loadFromStorage('gameHistory') || [];
-        
-        // Get current session stats if in progress
-        const currentStreak = sessionStats.maxStreak || 0;
-        const currentPerfect = sessionStats.perfectWords || 0;
-        
-        const totalGames = history.length;
-        const avgAccuracy = totalGames > 0 
-            ? Math.round(history.reduce((sum, g) => sum + g.accuracy, 0) / totalGames)
-            : 0;
-        
-        // Calculate current game accuracy if in progress
-        let currentAccuracy = 0;
-        if (currentLevelIndex > 0 && currentLevelIndex < levels.length) {
-            const totalAttempts = (currentLevelIndex * 2) + rootMistakes + posMistakes;
-            const totalCorrect = currentLevelIndex * 2;
-            currentAccuracy = Math.round((totalCorrect / totalAttempts) * 100);
-        }
-        
-        gameArea.innerHTML = `
-            <h1>📊 Your Statistics</h1>
-            
-            ${currentLevelIndex > 0 && currentLevelIndex < levels.length ? `
-                <div class="explanation-box" style="background: #e8f5e9; border: 2px solid #4caf50;">
-                    <h3 style="color: #2e7d32; border-color: #4caf50;">Current Session In Progress</h3>
-                    <div class="stat-row">
-                        <span><strong>Progress:</strong></span>
-                        <span>${currentLevelIndex}/${levels.length} words</span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Current Accuracy:</strong></span>
-                        <span style="color: #2e7d32;">${currentAccuracy}%</span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Current Streak:</strong></span>
-                        <span>${currentStreak} 🔥</span>
-                    </div>
-                </div>
-            ` : ''}
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h4>Games Completed</h4>
-                    <div class="stat-value">${totalGames}</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Avg Accuracy</h4>
-                    <div class="stat-value">${avgAccuracy}%</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Best Streak</h4>
-                    <div class="stat-value">${Math.max(currentStreak, allStats.sessionStats?.maxStreak || 0)} 🔥</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Perfect Words</h4>
-                    <div class="stat-value">${currentPerfect + (allStats.sessionStats?.perfectWords || 0)}</div>
-                </div>
-            </div>
-            
-            <div class="explanation-box">
-                <h3>Recent Games</h3>
-                ${history.slice(-5).reverse().map((game, i) => `
-                    <div class="stat-row">
-                        <span>${new Date(game.date).toLocaleDateString()}</span>
-                        <span style="color: ${game.accuracy >= 90 ? '#2ecc71' : '#3498db'}">${game.accuracy}%</span>
-                    </div>
-                `).join('') || '<p style="color: #95a5a6;">No games completed yet</p>'}
-            </div>
-            
-            <div class="btn-container" style="margin-top: 20px;">
-                ${currentLevelIndex > 0 && currentLevelIndex < levels.length ? 
-                    `<button onclick="loadLevel(${currentLevelIndex})">↩️ Resume Game</button>` : ''}
-                <button onclick="renderHomePage()">🏠 Back to Home</button>
-            </div>
-        `;
-    }
-
-    async function showLeaderboard() {
-        const scores = await loadLeaderboard();
-        
-        gameArea.innerHTML = `
-            <h1>🏆 Global Leaderboard</h1>
-            <p style="color: #7f8c8d; margin-bottom: 20px;">
-                Top players worldwide / 世界のトッププレイヤー
-            </p>
-            
-            <div class="leaderboard">
-                ${scores.length > 0 ? scores.map((score, i) => `
-                    <div class="leaderboard-entry">
-                        <div class="leaderboard-rank">#${i + 1}</div>
-                        <div class="leaderboard-name">${score.name}</div>
-                        <div class="leaderboard-score">${score.accuracy}%</div>
-                    </div>
-                `).join('') : '<p style="color: #95a5a6; text-align: center;">No scores yet. Be the first!</p>'}
-            </div>
-            
-            <div class="btn-container" style="margin-top: 20px;">
-                ${currentLevelIndex > 0 && currentLevelIndex < levels.length ? 
-                    `<button onclick="loadLevel(${currentLevelIndex})">↩️ Resume Game</button>` : ''}
-                <button onclick="renderHomePage()">🏠 Back to Home</button>
-            </div>
-        `;
-    }
-
-    function showCheckpoint() {
-        window.speechSynthesis.cancel();
-        
-        const sectionNum = Math.floor(currentLevelIndex / SECTION_SIZE);
-        const nextSection = sectionNum + 1;
-        
-        const sectionRootMistakes = rootMistakes - startOfSectionRootMistakes;
-        const sectionPosMistakes = posMistakes - startOfSectionPosMistakes;
-        const wordsInThisSection = SECTION_SIZE;
-        
-        const totalSectionTasks = (currentLevelIndex > START_POS_AT_LEVEL) ? wordsInThisSection * 2 : wordsInThisSection;
-        const mistakesInSection = (currentLevelIndex > START_POS_AT_LEVEL) ? (sectionRootMistakes + sectionPosMistakes) : sectionRootMistakes;
-        const totalCorrect = totalSectionTasks - mistakesInSection;
-        const sectionAccuracy = Math.round((totalCorrect / totalSectionTasks) * 100);
-        
-        let badge = '';
-        if (sectionAccuracy === 100) badge = '<div class="achievement">⭐ PERFECT SECTION!</div>';
-        else if (sectionAccuracy >= 90) badge = '<div class="achievement">🎯 EXCELLENT!</div>';
-        
-        // Save progress before showing checkpoint
-        saveProgress();
-        
-        gameArea.innerHTML = `
-            <div class="report-card">
-                <div class="score-header" style="color:#3498db;">✓ Checkpoint Complete!</div>
-                <h1 style="font-size: 2rem; margin-top:10px;">Section ${sectionNum} Results</h1>
-                ${badge}
-                
-                <div class="score-breakdown">
-                    <div class="stat-row">
-                        <span><strong>Root Word Score:</strong></span>
-                        <span style="color: ${sectionRootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${wordsInThisSection - sectionRootMistakes}/${wordsInThisSection}
-                        </span>
-                    </div>
-                    ${currentLevelIndex > START_POS_AT_LEVEL ? `
-                    <div class="stat-row">
-                        <span><strong>Part of Speech:</strong></span>
-                        <span style="color: ${sectionPosMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${wordsInThisSection - sectionPosMistakes}/${wordsInThisSection}
-                        </span>
-                    </div>` : ''}
-                    <hr style="margin: 10px 0; border-top: 2px solid #3498db;">
-                    <div class="stat-row" style="font-weight: bold; font-size: 1.3rem;">
-                        <span>Section Accuracy:</span>
-                        <span style="color: #2c3e50;">${sectionAccuracy}%</span>
-                    </div>
-                </div>
-
-                <p style="color: #777; margin-top:20px;">Ready for Section ${nextSection}?</p>
-                <div class="btn-container" style="margin-top: 20px;">
-                    <button onclick="continueFromCheckpoint()">Continue → Section ${nextSection}</button>
-                    <button onclick="renderHomePage()" style="background: white; border-color: #95a5a6; color: #7f8c8d;">🏠 Back to Home</button>
-                </div>
-            </div>
-        `;
-
-        startOfSectionRootMistakes = rootMistakes;
-        startOfSectionPosMistakes = posMistakes;
-    }
-    
-    function continueFromCheckpoint() {
-        loadLevel(currentLevelIndex);
-    }
-
-    async function showReportCard() {
-        const totalWords = levels.length;
-        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
-        const totalCorrectActions = totalWords * 2;
-        const overallAccuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
-        
-        sessionStats.totalTime = Math.round((Date.now() - sessionStats.startTime) / 1000);
-        const minutes = Math.floor(sessionStats.totalTime / 60);
-        const seconds = sessionStats.totalTime % 60;
-        
-        const rootSuccesses = totalWords - rootMistakes;
-        const posSuccesses = totalWords - posMistakes;
-
-        let rating = "Good Effort! 💪";
-        if (overallAccuracy === 100) rating = "PERFECT SCORE! 🌟";
-        else if (overallAccuracy >= 95) rating = "Master! 👑";
-        else if (overallAccuracy >= 85) rating = "Excellent! 🎯";
-        
-        // Save to history
-        const history = loadFromStorage('gameHistory') || [];
-        history.push({
-            date: new Date().toISOString(),
-            accuracy: overallAccuracy,
-            time: sessionStats.totalTime,
-            streak: sessionStats.maxStreak
-        });
-        saveToStorage('gameHistory', history);
-
-        gameArea.innerHTML = `
-            <div class="report-card">
-                <div class="score-header">🎉 Course Complete!</div>
-                
-                <div class="total-score">${overallAccuracy}%</div>
-                <div style="color:#888; margin-bottom:20px; font-size: 1.2rem;">${rating}</div>
-                
-                <div class="score-breakdown">
-                    <div class="stat-row">
-                        <span><strong>Root Word Score:</strong></span>
-                        <span style="color: ${rootMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${rootSuccesses}/${totalWords}
-                        </span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Grammar Score:</strong></span>
-                        <span style="color: ${posMistakes === 0 ? '#2ecc71' : '#e74c3c'}">
-                            ${posSuccesses}/${totalWords}
-                        </span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Time:</strong></span>
-                        <span>${minutes}m ${seconds}s</span>
-                    </div>
-                    <div class="stat-row">
-                        <span><strong>Best Streak:</strong></span>
-                        <span>${sessionStats.maxStreak} 🔥</span>
-                    </div>
-                </div>
-                
-                ${overallAccuracy >= 85 ? `
-                    <div style="margin: 20px 0;">
-                        <input type="text" id="player-name" placeholder="Enter your name" 
-                               style="padding: 10px; border: 2px solid #3498db; border-radius: 8px; width: 200px; margin-right: 10px;">
-                        <button onclick="submitToLeaderboard()">Submit to Leaderboard 🏆</button>
-                    </div>
-                ` : ''}
-                
-                <p style="color: #777; font-size: 0.9rem; margin-top: 20px;">Take a screenshot for your teacher!</p>
-                <div class="btn-container" style="margin-top: 20px;">
-                    <button onclick="resetProgress()">🔄 Play Again</button>
-                    <button onclick="renderHomePage()" style="background: white; border-color: #95a5a6; color: #7f8c8d;">🏠 Back to Home</button>
-                </div>
-            </div>
-        `;
-    }
-
-    async function submitToLeaderboard() {
-        const nameInput = document.getElementById('player-name');
-        const name = nameInput.value.trim();
-        
-        if (!name) {
-            alert('Please enter your name!');
-            return;
-        }
-        
-        const totalWords = levels.length;
-        const totalAttempts = (totalWords * 2) + rootMistakes + posMistakes;
-        const totalCorrectActions = totalWords * 2;
-        const accuracy = Math.round((totalCorrectActions / totalAttempts) * 100);
-        
-        await saveSharedScore(name, accuracy, sessionStats.totalTime);
-        alert('Score submitted! 🎉');
-        showLeaderboard();
-    }
-
-    function handleNextLevelTransition(data) {
-        currentLevelIndex++;
-        saveProgress(); 
-        
-        if (currentLevelIndex < levels.length && (currentLevelIndex % SECTION_SIZE === 0)) {
-            showCheckpoint();
-        } else if (currentLevelIndex >= levels.length) {
-            showReportCard();
-        } else {
-            loadLevel(currentLevelIndex);
-        }
-    }
-
-    function showExampleAndNext(data) {
-        window.speechSynthesis.cancel();
-        
-        buttonsEl.innerHTML = '';
-        instructionEl.innerText = "Example Sentence (文の例):";
-        
-        // Change main word to show the root word
-        mainWordEl.innerText = data.root;
-        mainWordEl.onclick = () => speak(data.root);
-        
-        gameArea.innerHTML += `
-            <div class="example-box" id="example-box">
-                ${data.simpleExample}
-                <span>👆 Tap anywhere to continue...</span>
-            </div>
-        `;
-        
-        const exampleBox = document.getElementById('example-box');
-        const cleanText = data.simpleExample.replace(/\*\*/g, '');
-        speak(`${data.root}. ${cleanText}`);
-
-        exampleBox.onclick = () => handleNextLevelTransition(data);
-        
-        const transitionHandler = (e) => {
-            if (e.target.id !== 'reset-link' && e.target.tagName !== 'BUTTON') {
-                gameArea.removeEventListener('click', transitionHandler);
-                handleNextLevelTransition(data);
-            }
-        };
-        gameArea.addEventListener('click', transitionHandler);
-        summonDaikon();
     }
 
     function loadLevel(index) {
         window.speechSynthesis.cancel();
+        lastClickedButton = null; 
         
         if (index >= levels.length) {
             showReportCard();
@@ -1280,235 +224,164 @@ let isDaikonActive = false;
         }
 
         const data = levels[index];
-        const isBeginnerPhase = index < START_POS_AT_LEVEL;
-        currentRootAttempts = 0;
-        currentPosAttempts = 0;
+        const isBeginner = index < START_POS_AT_LEVEL;
 
         gameArea.innerHTML = `
-            <div class="level-indicator" id="level-indicator"></div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            
-            <div class="info-box" id="info-box"></div>
-            
-            <h1 id="main-word" class="main-word-clickable"></h1>
-            <p class="question-text" id="instruction"></p>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <p style="color:#7f8c8d">Word ${index + 1} of ${levels.length}</p>
+            <h1 class="main-word-clickable" onclick="speak('${data.display}')">${data.display}</h1>
+            <p id="instruction">What is the root word? / 語根は何ですか？</p>
             <div class="btn-container" id="buttons"></div>
-            <div class="reset-link" id="reset-link" onclick="resetProgress()">Reset Progress</div>
-        `;
-        
-        mainWordEl = document.getElementById('main-word');
-        instructionEl = document.getElementById('instruction');
-        buttonsEl = document.getElementById('buttons');
-        const infoBoxEl = document.getElementById('info-box');
-
-        updateProgressUI();
-        
-        mainWordEl.onclick = () => speak(data.display);
-        mainWordEl.innerText = data.display;
-        
-        infoBoxEl.innerHTML = `
-            <p>Meaning: <span>${data.jpMeaning}</span></p>
-            <p>Part of Speech: <span>${data.derivativePos} (${data.jpPos})</span></p>
         `;
 
-        instructionEl.innerText = "What is the root word? / 語根は何ですか？";
-        speak(data.display);
+        document.getElementById('progress-fill').style.width = `${(index / levels.length) * 100}%`;
 
-        let options = [data.root, ...data.decoys];
-        options.sort(() => Math.random() - 0.5);
+        let options = [data.root, ...data.decoys].sort(() => Math.random() - 0.5);
+        const btnContainer = document.getElementById('buttons');
 
-        buttonsEl.innerHTML = '';
         options.forEach(word => {
             const btn = document.createElement('button');
             btn.innerText = word;
-            btn.onclick = () => checkRoot(word, data, btn, infoBoxEl, isBeginnerPhase);
-            // Prevent focus on mobile
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                btn.click();
-            });
-            buttonsEl.appendChild(btn);
+            btn.onclick = () => {
+                if (lastClickedButton !== btn) {
+                    // Reset others
+                    btnContainer.querySelectorAll('button').forEach(b => b.classList.remove('selected-once'));
+                    // Highlight this one
+                    btn.classList.add('selected-once');
+                    speak(word);
+                    lastClickedButton = btn;
+                } else {
+                    checkRoot(word, data, btn, isBeginner);
+                }
+            };
+            btnContainer.appendChild(btn);
         });
     }
 
-    function checkRoot(selectedWord, data, btnElement, infoBoxEl, isBeginnerPhase) {
-        currentRootAttempts++;
-
-        if (selectedWord === data.root) {
-            btnElement.classList.add('correct');
-            speak(data.root);
+    function checkRoot(selected, data, btn, isBeginner) {
+        if (selected === data.root) {
+            btn.classList.add('correct');
+            speak("Correct!");
+            sessionStats.streak++;
+            sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak);
             
-            if (currentRootAttempts === 1) {
-                sessionStats.streak++;
-                sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak);
-                if (!isBeginnerPhase && currentPosAttempts === 0) {
-                    // Will check POS too
-                }
-            } else {
-                sessionStats.streak = 0;
-            }
-            
-            if (isBeginnerPhase) {
-                if (currentRootAttempts === 1) sessionStats.perfectWords++;
-                setTimeout(() => showExampleAndNext(data), 1000);
-            } else {
-                setTimeout(() => loadPhase2(data, infoBoxEl), 1000);
-            }
+            setTimeout(() => {
+                if (isBeginner) showExample(data);
+                else loadPhase2(data);
+            }, 1000);
         } else {
-            btnElement.classList.add('wrong');
+            btn.classList.add('wrong');
             speak("Try again");
             rootMistakes++;
             sessionStats.streak = 0;
-            saveProgress();
         }
     }
 
-    function loadPhase2(data, infoBoxEl) {
-        infoBoxEl.innerHTML = '';
-        mainWordEl.innerText = data.root;
-        mainWordEl.onclick = () => speak(data.root);
-        instructionEl.innerText = `What is the Part of Speech for "${data.root}"? / 品詞は何ですか？`;
-        
-        buttonsEl.innerHTML = '';
+    function loadPhase2(data) {
+        lastClickedButton = null;
+        gameArea.innerHTML = `
+            <h1 class="main-word-clickable" onclick="speak('${data.root}')">${data.root}</h1>
+            <p>What part of speech is "${data.root}"?</p>
+            <div class="btn-container" id="buttons"></div>
+        `;
 
-        const posOptions = [
-            { en: "Noun", jp: "名詞 (Meishi)" },
-            { en: "Verb", jp: "動詞 (Doushi)" },
-            { en: "Adjective", jp: "形容詞 (Keiyoushi)" }
-        ];
+        const posOptions = ["Noun", "Verb", "Adjective"];
+        const btnContainer = document.getElementById('buttons');
 
-        posOptions.forEach(opt => {
+        posOptions.forEach(pos => {
             const btn = document.createElement('button');
-            btn.innerHTML = `${opt.en} <span class="jp-sub">${opt.jp}</span>`;
-            btn.onclick = () => checkPOS(opt.en, data, btn);
-            // Prevent focus on mobile
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                btn.click();
-            });
-            buttonsEl.appendChild(btn);
+            btn.innerText = pos;
+            btn.onclick = () => {
+                if (lastClickedButton !== btn) {
+                    btnContainer.querySelectorAll('button').forEach(b => b.classList.remove('selected-once'));
+                    btn.classList.add('selected-once');
+                    speak(pos);
+                    lastClickedButton = btn;
+                } else {
+                    if (pos === data.pos) {
+                        btn.classList.add('correct');
+                        speak("Yes!");
+                        setTimeout(() => showExample(data), 1000);
+                    } else {
+                        btn.classList.add('wrong');
+                        posMistakes++;
+                        sessionStats.streak = 0;
+                    }
+                }
+            };
+            btnContainer.appendChild(btn);
         });
     }
 
-    function checkPOS(selectedPos, data, btnElement) {
-        currentPosAttempts++;
-        let isCorrect = (selectedPos === data.pos);
-
-        if (data.root === 'Correct' && (selectedPos === 'Adjective' || selectedPos === 'Verb')) {
-            isCorrect = true;
-        }
-
-        if (isCorrect) {
-            btnElement.classList.add('correct');
-            speak(`${data.root} is a ${selectedPos}`);
-            
-            if (currentRootAttempts === 1 && currentPosAttempts === 1) {
-                sessionStats.perfectWords++;
-            } else {
-                sessionStats.streak = 0;
-            }
-            
-            setTimeout(() => showExampleAndNext(data), 2500);
-        } else {
-            btnElement.classList.add('wrong');
-            speak("Not quite");
-            posMistakes++;
-            sessionStats.streak = 0;
-            saveProgress();
-        }
+    function showExample(data) {
+        gameArea.innerHTML = `
+            <h1>${data.root}</h1>
+            <div class="example-box">${data.simpleExample}</div>
+            <button onclick="nextLevel()">Next Word →</button>
+        `;
+        speak(`${data.root}. ${data.simpleExample.replace(/\*\*/g, '')}`);
+        summonDaikon();
     }
 
-    // Audio control functions
-    function toggleAudio(enabled) {
-        audioSettings.enabled = enabled;
-        saveToStorage('audioSettings', audioSettings);
+    function nextLevel() {
+        dismissDaikon();
+        currentLevelIndex++;
+        loadLevel(currentLevelIndex);
     }
 
-    function updateRate(value) {
-        audioSettings.rate = parseFloat(value);
-        document.getElementById('rate-value').innerText = parseFloat(value).toFixed(1);
-        saveToStorage('audioSettings', audioSettings);
-    }
+    // === 3. THE DAIKON (CARROT) GUIDE ===
 
-    function updateVolume(value) {
-        audioSettings.volume = parseFloat(value);
-        document.getElementById('volume-value').innerText = Math.round(parseFloat(value) * 100) + '%';
-        saveToStorage('audioSettings', audioSettings);
-    }
-
-    // Start
-    renderHomePage();
     function summonDaikon() {
-    // Don't show him if he's on a break
-    if (daikonCooldown > 0) {
-        daikonCooldown--;
-        return;
-    }
-
-    // Trigger: 5-word streak AND only on the example page
-    if (sessionStats.streak >= 5) {
-        // Only create him if he's not already there
-        if (!document.getElementById('daikon-sensei')) {
-            const daikonHTML = `
+        if (daikonCooldown > 0) { daikonCooldown--; return; }
+        
+        if (sessionStats.streak >= 5 && !document.getElementById('daikon-sensei')) {
+            const html = `
                 <div id="daikon-sensei" class="daikon-container">
                     <div class="speech-bubble" id="daikon-bubble">
-                        How is the game going?<br>調子はどうですか？
-                        <div class="btn-container" style="margin-top:10px; flex-direction:row; gap:5px;">
-                            <button onclick="daikonFeedback('easy')" style="padding:8px; font-size:0.7rem;">Easy</button>
-                            <button onclick="daikonFeedback('soso')" style="padding:8px; font-size:0.7rem;">So-so</button>
-                            <button onclick="daikonFeedback('hard')" style="padding:8px; font-size:0.7rem;">Challenging</button>
+                        How is it going?<br>調子はどう？
+                        <div class="btn-container" style="flex-direction:row; gap:5px;">
+                            <button onclick="daikonFeedback('easy')">Easy</button>
+                            <button onclick="daikonFeedback('hard')">Hard</button>
                         </div>
                     </div>
                     <div class="daikon-sprite">🥕</div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', daikonHTML);
-            // Small delay to trigger the "pop up" animation
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
             setTimeout(() => document.getElementById('daikon-sensei').classList.add('active'), 100);
-            isDaikonActive = true;
         }
     }
-}
 
-function daikonFeedback(choice) {
-    const bubble = document.getElementById('daikon-bubble');
-    if (choice === 'easy') {
-        bubble.innerHTML = `It looks too easy for you! Want to skip ahead 10 words?<br>10問飛ばして進みますか？
-            <div class="btn-container" style="margin-top:10px;">
-                <button onclick="changeDifficulty(10)">Yes, skip ahead!</button>
-                <button onclick="dismissDaikon()">No, I'm fine here</button>
-            </div>`;
-    } else if (choice === 'hard') {
-        bubble.innerHTML = `I see! This is a tough section. Want to go back 5 words to practice more?<br>少し戻って練習しますか？
-            <div class="btn-container" style="margin-top:10px;">
-                <button onclick="changeDifficulty(-5)">Yes, go back</button>
-                <button onclick="dismissDaikon()">No, I'll keep trying</button>
-            </div>`;
-    } else {
-        bubble.innerHTML = `Great! You are doing perfectly. Keep it up!<br>その調子で頑張りましょう！`;
-        daikonCooldown = 10; // Don't return for 10 words
-        setTimeout(dismissDaikon, 2500);
+    function daikonFeedback(choice) {
+        const bubble = document.getElementById('daikon-bubble');
+        if (choice === 'easy') {
+            bubble.innerHTML = "Too easy? Let's skip ahead 5 words!<br>5問飛ばしましょう！<br><button onclick='changeDiff(5)'>OK!</button>";
+        } else {
+            bubble.innerHTML = "Keep going! You're doing great.<br>その調子！";
+            daikonCooldown = 10;
+            setTimeout(dismissDaikon, 2000);
+        }
     }
-}
 
-function dismissDaikon() {
-    const d = document.getElementById('daikon-sensei');
-    if (d) {
-        d.classList.remove('active');
-        setTimeout(() => d.remove(), 600);
+    function changeDiff(amt) {
+        currentLevelIndex = Math.min(currentLevelIndex + amt, levels.length - 1);
+        daikonCooldown = 10;
+        dismissDaikon();
+        loadLevel(currentLevelIndex);
     }
-    isDaikonActive = false;
-}
 
-function changeDifficulty(amount) {
-    // Moves the level index forward or backward
-    currentLevelIndex = Math.max(0, Math.min(currentLevelIndex + amount, levels.length - 1));
-    daikonCooldown = 10; 
-    dismissDaikon();
-    loadLevel(currentLevelIndex);
-}
+    function dismissDaikon() {
+        const d = document.getElementById('daikon-sensei');
+        if (d) { d.classList.remove('active'); setTimeout(() => d.remove(), 600); }
+    }
+
+    function speak(text) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
+
+    renderHomePage();
 </script>
 </body>
 </html>
